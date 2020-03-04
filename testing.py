@@ -5,8 +5,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import math
 
-# this a test comment lmao
-
 # DO NOT DELETE!!! DON'T BE STUPID FENELLA!!!
 
 #dir = "/Users/fenella/Documents/Uni/Research/Code/Instances/Sparse"
