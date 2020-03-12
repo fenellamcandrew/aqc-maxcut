@@ -39,9 +39,10 @@ m = rn.randint(n-1,((n*(n-1))/2)-1)
 G = graph(n,m)
 while not (nx.is_connected(G)):
     G = graph(n,m)
-n = 5
-m = 8
+n = 6
+m = 1
 G = graph(n,m)
+G = nx.complete_graph(n)
 
 # Creating initial state, which is just equal superposition over all
 # possible states
@@ -49,8 +50,8 @@ state_curr = 1
 for i in range(0,n):
     state_curr = np.kron(state_curr, minus())
 
-t_step = 1 # Time step
-T = 10 # Total time
+t_step = 0.1 # Time step
+T = 1000 # Total time
 t = 0 # Starting time
 
 # Initial and Problem Hamiltonians based off our generated graph
@@ -104,12 +105,14 @@ plt.title("PDF for final states")
 # Plotting graph of entanglement
 plt.figure(figsize = (10,7))
 plt.subplot(2,2,1)
-plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
+#plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
+plt.plot(np.arange(0, T, t_step).tolist(), ent)
 plt.title('Entanglement')
 
 # Plotting energy graph of eigenvalues
 plt.subplot(2,2,2)
-plt.plot(np.arange(0,1+(t_step/T),t_step/T).tolist(), energy, 'b')
+#plt.plot(np.arange(0,1+(t_step/T),t_step/T).tolist(), energy, 'b')
+plt.plot(np.arange(0,1,t_step/T).tolist(), energy, 'b')
 plt.title('Energy')
 plt.ylabel('Eigenvalues')
 

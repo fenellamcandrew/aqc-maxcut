@@ -81,6 +81,9 @@ def squareElems(array):
 GPlanar = nx.gnm_random_graph(3,3)
 GNonPlanar = nx.complete_graph(5)
 
+nx.draw(GNonPlanar,with_labels=True)
+plt.show()
+
 #print(nx.algorithms.planarity.check_planarity(GPlanar))
 #print(nx.algorithms.planarity.check_planarity(GNonPlanar))
 
@@ -93,7 +96,6 @@ print(state)
 state = np.dot(np.kron(pH(),np.identity(2)),state)
 state = normFinal(state)
 print(state)
-
 
 # SAVE FOR _main_.py file
 #for i in range(0,len(states)):
