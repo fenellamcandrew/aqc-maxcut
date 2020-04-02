@@ -1,0 +1,27 @@
+experiment: 
+  name: "maxcut"
+  author: "fen"
+  tracking-uri: "http://115.146.95.176:5000/"
+  seed: 1032918
+  utils: 
+    - "SCRIPT_PATH"
+    - "SCRIPT_2.py"
+    - "define-paulis.py"
+
+initialise:
+  source: "initialise_SCRIPT_PATH"
+  params:
+    instance_index: "{{instance_index}}"
+
+build_hamiltonians:
+  source: "build_hamiltonians_SCRIPT_PATH"
+  params:
+    n_qubits: "{{n_qubits}}"
+    time_T: "{{time_T}}"
+
+state_evolution:
+  source: 
+    - "solver_SCRIPT_PATH"
+
+results:
+  source: "results_SCRIPT_PATH"
