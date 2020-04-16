@@ -3,15 +3,15 @@ From: ubuntu:16.04
 
 %post
     apt-get -y update
-    apt-get -y install fortune cosway lolcat
+    apt-get -y install fortune cowsay lolcat
 
 %environment
-export Author="FENELLA MCANDREW"
+    export Author="FENELLA MCANDREW"
     export LC_ALL=C
     export PATH=/usr/games:$PATH
 
 %runscript
-echo "Welcome $Author to your first container lmao"
+    echo "Welcome $Author to your first container lmao"
     fortunte | cosway | lolcat
 
 %labels
