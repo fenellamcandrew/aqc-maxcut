@@ -12,7 +12,7 @@ From: ubuntu:16.04
 
 %runscript
     echo "Welcome $Author to your first container lmao"
-    fortunte | cosway | lolcat
+    fortunte | cowsay | lolcat
 
 %labels
     Author Fenella McAndrew
