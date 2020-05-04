@@ -4,6 +4,7 @@ from pauli import *
 import networkx as nx
 import matplotlib.pyplot as plt
 import math
+import yaml
 
 # DO NOT DELETE!!! DON'T BE STUPID FENELLA!!!
 
@@ -69,7 +70,7 @@ G3.add_edges_from(edges)
 #plt.figure(3)
 #nx.draw(G3,with_labels=True)
 #plt.show()
-
+'''
 def squareElems(array):
     newArray = []
     for i in range(0,len(array)):
@@ -81,10 +82,11 @@ GNonPlanar = nx.complete_graph(5)
 
 nx.draw(GNonPlanar,with_labels=True)
 plt.show()
-
+'''
 #print(nx.algorithms.planarity.check_planarity(GPlanar))
 #print(nx.algorithms.planarity.check_planarity(GNonPlanar))
 
+'''
 state = np.kron(plus(), plus())
 state = normTest(state)
 print(state)
@@ -94,6 +96,7 @@ print(state)
 state = np.dot(np.kron(pH(),np.identity(2)),state)
 state = normFinal(state)
 print(state)
+'''
 
 # SAVE FOR _main_.py file
 #for i in range(0,len(states)):
@@ -118,3 +121,23 @@ print(state)
 #    plt.bar(x,prob_state.transpose().tolist())
 #    plt.xticks(maxes, slice, rotation=90)
 #    plt.title("PDF for final states")
+'''
+with open(r'params_template.yaml') as file:
+    doc = yaml.load(file, Loader=yaml.FullLoader)
+    print(doc["build_hamiltonians"]["params"]["n_qubits"])
+'''
+
+fig, ax = plt.subplots()
+fig1 = plt.figure(1)
+x = [1,2,3,4]
+y = [1,2,3,4]
+plt.plot(x,y)
+
+fig2 = plt.figure(figsize = (10,7))
+plt.subplot(2,2,1)
+x = [1,2,3,4,5]
+y = [1,4,9,16,25]
+plt.plot(x,y)
+
+fig1.savefig('fig1.png')
+fig2.savefig('fig2.png')

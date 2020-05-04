@@ -18,7 +18,7 @@ import random as rn
 def density(n,m):
     D = (2*m)/(n*(n-1))
     return D
-
+'''
 n = 14
 count = 0
 sparse_graphs = []
@@ -39,9 +39,30 @@ for G in sparse_graphs:
     f.flush()
     f.close()
     count = count + 1
-
+'''
 #print(sparse_graphs)
 #for i in range(0,20):
 #    plt.figure(i)
 #    nx.draw(sparse_graphs[i],with_labels=True)
 #plt.show()
+
+n = 16
+count = 0
+dense_graphs = []
+while count < 20:
+    m = rn.randint(n-1,(n*(n-1)/2))
+    if density(n,m) > 0.5:
+        G = nx.gnm_random_graph(n,m) # <- Erdos-Renyi
+        if nx.is_connected(G) and not(G in dense_graphs):
+            dense_graphs = dense_graphs + [G]
+            count = count + 1
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=16/"
+count = 1
+for G in dense_graphs:
+    name = "16_Dense" + str(count) + ".txt"
+    f = open(path + name,"w+")
+    print(nx.node_link_data(G),file=f)
+    f.flush()
+    f.close()
+    count = count + 1
