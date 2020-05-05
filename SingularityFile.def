@@ -61,8 +61,7 @@ From: python:3.6
     psycopg2 \
     numpy \
     matplotlib \
-    networkx \
-    yaml
+    networkx 
 
   ####################################################
   # AWS Installation
