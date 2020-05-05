@@ -2,5 +2,5 @@
 MAXCUT Simulation Code
 
 ```shell
-ssh -i ~/.ssh/experimentr.pem ubuntu@45.113.234.244
+ssh -i ~/.ssh/experimentr.pem ubuntu@<MY_IP_ADDRESS>
 ```
