@@ -13,11 +13,6 @@ from pauli import *
 from entanglement import *
 from energy_gap import *
 
-# Creates random graph give n vertices and m edges
-def graph(n,m):
-    G = nx.gnm_random_graph(n,m)
-    return G
-
 # Function that truncates number to certain number of decimal points
 def truncate(n, decimals=0):
     multiplier = 10 ** decimals
@@ -38,6 +33,11 @@ def magnitudes(array): # Should be correct
         newArray = newArray + [np.sqrt(abs((array[i].real)**2 + (array[i].imag)**2))]
     return newArray/np.sqrt(sum)
 
+# Creating tmp file to store figs
+if os.path.exists('tmp'):
+    os.rmdir('tmp')
+os.mkdir('tmp')
+
 # PARSING ARGS IN TERMINAL
 parser = argparse.ArgumentParser()
 # Adding command line argument
@@ -47,6 +47,7 @@ args = parser.parse_args()
 # Extract into variable
 run_path = args.run_path
 
+print("Reading yaml file\n")
 with open(run_path) as file:
     doc = yaml.load(file, Loader=yaml.FullLoader)
 
@@ -94,6 +95,7 @@ with mlflow.start_run():
 #state1 = magnitudes(state_curr)
 #states = states + [state1]
 
+    print("Starting evolution\n")
     while t <= T: # Terminate when t/T = 1
         energy = energy + [energy_calc(t, T, Hb, Hp)]
         state_curr = schrodinger_solver(state_curr, t_step, t, T, Hb, Hp)
@@ -105,7 +107,7 @@ with mlflow.start_run():
     state_curr = magnitudes(state_curr)
 
 # For the time being, have truncated the values to avoiding rounding errors
-
+    print("Creating figures\n")
     for i in range(0,len(state_curr)):
         state_curr[i] = truncate(state_curr[i], 10)
 
@@ -136,13 +138,14 @@ with mlflow.start_run():
     fig2 = plt.figure(figsize = (10,7))
     plt.subplot(2,2,1)
 #plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
-    plt.plot(np.arange(0, T, t_step).tolist(), ent)
+    plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
     plt.title('Entanglement')
 
 # Plotting energy graph of eigenvalues
     plt.subplot(2,2,2)
 #plt.plot(np.arange(0,1+(t_step/T),t_step/T).tolist(), energy, 'b')
-    plt.plot(np.arange(0,1,t_step/T).tolist(), energy, 'b')
+    #plt.plot(np.arange(0,1,t_step/T).tolist(), energy, 'b')
+    plt.plot(np.arange(0,T+t_step,t_step).tolist(), energy, 'b')
     plt.title('Energy')
     plt.ylabel('Eigenvalues')
 
@@ -156,4 +159,9 @@ with mlflow.start_run():
     mlflow.log_param("n_qubits", n)
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
+    mlflow.log_artifact("tmp/fig1.png")
+    mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact(run_path)
+
+# Deleting tmp file storing figs
+os.rmdir('tmp')

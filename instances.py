@@ -45,7 +45,7 @@ for G in sparse_graphs:
 #    plt.figure(i)
 #    nx.draw(sparse_graphs[i],with_labels=True)
 #plt.show()
-
+'''
 n = 16
 count = 0
 dense_graphs = []
@@ -66,3 +66,15 @@ for G in dense_graphs:
     f.flush()
     f.close()
     count = count + 1
+'''
+n = 4
+G = nx.gnm_random_graph(4,3)
+while not(nx.is_connected(G)):
+    G = nx.gnam_random_graph(4,3)
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Sparse/n=4/"
+name = "4_Sparse1.txt"
+f = open(path + name,"w+")
+print(nx.node_link_data(G),file=f)
+f.flush()
+f.close()

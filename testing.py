@@ -139,5 +139,5 @@ x = [1,2,3,4,5]
 y = [1,4,9,16,25]
 plt.plot(x,y)
 
-fig1.savefig('fig1.png')
-fig2.savefig('fig2.png')
+fig1.savefig('tmp/fig1.png')
+fig2.savefig('tmp/fig2.png')
