@@ -124,6 +124,34 @@ From: python:3.6
   echo "Moving template files from CONTAINER to AWS S3 STORAGE"
   aws s3 mv params/ready/ $S3_BUCKET/$EXPERIMENT_NAME/ready/ --recursive --exclude "*" --include "*.yml" --endpoint-url=$MLFLOW_S3_ENDPOINT_URL
 
+####################################################
+# APP TO RUN EXPERIMENT
+####################################################
+
+%apphelp run_experiment
+  This is the help for running experiments. To run an experiment feed the following Arguments: 
+    - ARG_1=<EXPERIMENTAL_CONFIG_YAML_FILE_NAME>
+
+%applabels run_experiment
+  APP_NAME RUNNING_EXPERIMENTS
+
+%apprun run_experiment
+  echo "Container was created $NOW"
+
+  echo "Arguments received: $*"
+
+  # Run experiment with parameter file
+  python _main_.py --run-path=$@
+
+  export LOCAL_FILENAME=$@
+  export LOCAL_PREFIX="params/ready/"
+  export RAW_FILENAME=${LOCAL_FILENAME#"$LOCAL_PREFIX"}
+
+
+  # Move experiment to complete folder
+  echo "\n Completed experiment $@ moving to complete folder"
+  mv params/ready/$@ params/complete/$RAW_FILENAME
+
 
 %runscript
   echo "Container was created $NOW"
