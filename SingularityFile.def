@@ -141,7 +141,7 @@ From: python:3.6
   echo "Arguments received: $*"
 
   # Run experiment with parameter file
-  python _main_.py --run-path=$@
+  python _main_.py --run_path=$@
 
   export LOCAL_FILENAME=$@
   export LOCAL_PREFIX="params/ready/"
