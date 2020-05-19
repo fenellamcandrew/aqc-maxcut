@@ -35,6 +35,10 @@ def magnitudes(array): # Should be correct
 
 # Creating tmp file to store figs
 if os.path.exists('tmp'):
+    if os.path.exists('tmp/fig1.png'):
+        os.remove('tmp/fig1.png')
+    if os.path.exists('tmp/fig2.png'):
+        os.remove('tmp/fig2.png')
     os.rmdir('tmp')
 os.mkdir('tmp')
 
@@ -88,16 +92,17 @@ with mlflow.start_run():
 # Initial and Problem Hamiltonians based off our generated graph
     ent = []
     energy = []
+    min_gap = []
     Hb = init_hamil(G)
     Hp = prob_hamil(G)
 
 #states = []
 #state1 = magnitudes(state_curr)
 #states = states + [state1]
-
     print("Starting evolution\n")
     while t <= T: # Terminate when t/T = 1
         energy = energy + [energy_calc(t, T, Hb, Hp)]
+        min_gap = min_gap + [abs(energy_calc(t, T, Hb, Hp)[0]-energy_calc(t, T, Hb, Hp)[1])]
         state_curr = schrodinger_solver(state_curr, t_step, t, T, Hb, Hp)
     #state_curr1 = magnitudes(state_curr)
     #states = states + [state_curr1]
@@ -106,8 +111,8 @@ with mlflow.start_run():
 
     state_curr = magnitudes(state_curr)
 
-# For the time being, have truncated the values to avoiding rounding errors
     print("Creating figures\n")
+# For the time being, have truncated the values to avoiding rounding errors
     for i in range(0,len(state_curr)):
         state_curr[i] = truncate(state_curr[i], 10)
 
@@ -137,15 +142,26 @@ with mlflow.start_run():
 # Plotting graph of entanglement
     fig2 = plt.figure(figsize = (10,7))
     plt.subplot(2,2,1)
-#plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
-    plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
+    x_axis1 = []
+    num1 = 0
+    for i in range(0,len(ent)):
+        x_axis1 = x_axis1 + [num1]
+        num1 = num1 + t_step
+    #plt.plot(np.arange(0, T, t_step).tolist(), ent)
+    #plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
+    plt.plot(x_axis1, ent)
     plt.title('Entanglement')
 
 # Plotting energy graph of eigenvalues
     plt.subplot(2,2,2)
-#plt.plot(np.arange(0,1+(t_step/T),t_step/T).tolist(), energy, 'b')
-    #plt.plot(np.arange(0,1,t_step/T).tolist(), energy, 'b')
-    plt.plot(np.arange(0,T+t_step,t_step).tolist(), energy, 'b')
+    x_axis2 = []
+    num2 = 0
+    for j in range(0,len(energy)):
+        x_axis2 = x_axis2 + [num2]
+        num2 = num2 + t_step
+    #plt.plot(np.arange(0, T, t_step).tolist(), energy, 'b')
+    #plt.plot(np.arange(0, T+t_step, t_step).tolist(), energy, 'b')
+    plt.plot(x_axis2, energy, 'b')
     plt.title('Energy')
     plt.ylabel('Eigenvalues')
 
@@ -156,12 +172,23 @@ with mlflow.start_run():
     fig1.savefig("tmp/fig1.png")
     fig2.savefig("tmp/fig2.png")
 
+# log parameters for mlflow
     mlflow.log_param("n_qubits", n)
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
+    mlflow.log_param("Graph type", graph_type)
+
+# log metrics for mlflow
+    mlflow.log_metric("max entanglement",max(ent))
+    mlflow.log_metric("min energy gap",min(min_gap))
+
+# lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
     mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact(run_path)
 
+
 # Deleting tmp file storing figs
+os.remove('tmp/fig1.png')
+os.remove('tmp/fig2.png')
 os.rmdir('tmp')
