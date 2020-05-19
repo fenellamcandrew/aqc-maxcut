@@ -150,7 +150,7 @@ From: python:3.6
 
   # Move experiment to complete folder
   echo "\n Completed experiment $@ moving to complete folder"
-  mv params/ready/$@ params/complete/$RAW_FILENAME
+  mv $@ params/complete/$RAW_FILENAME
 
 
 %runscript
