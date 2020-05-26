@@ -126,7 +126,7 @@ with open(r'params_template.yaml') as file:
     doc = yaml.load(file, Loader=yaml.FullLoader)
     print(doc["build_hamiltonians"]["params"]["n_qubits"])
 '''
-
+'''
 fig, ax = plt.subplots()
 fig1 = plt.figure(1)
 x = [1,2,3,4]
@@ -141,3 +141,8 @@ plt.plot(x,y)
 
 fig1.savefig('tmp/fig1.png')
 fig2.savefig('tmp/fig2.png')
+'''
+
+G = nx.complete_graph(4)
+nx.draw_planar(G)
+plt.show()

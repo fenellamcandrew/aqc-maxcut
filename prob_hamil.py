@@ -13,6 +13,17 @@ def zz(i,j,n):
             prod = np.kron(prod, np.identity(2))
     return prod
 
+# Putting small bias on qubit i so we don't have a symmetric PDF at the end
+# [DOESN'T WORK YET]
+def bias(i,n):
+    curr = 1
+    for k in range(0,n):
+        if (k==i):
+            curr = np.kron(curr,pZ())
+        else:
+            curr = np.kron(curr,np.identity(2))
+    return curr
+
 # Creates Problem Hamiltonian give graph G
 def prob_hamil(G):
     Hp = []
@@ -22,5 +33,5 @@ def prob_hamil(G):
         curr = zz(edge[0],edge[1],nV)
         curr = (I - curr)
         Hp = [curr] + Hp
-    Hp = (1/2)*sum(Hp)
+    Hp = (1/2)*sum(Hp) + 0.01*bias(0,nV)
     return Hp

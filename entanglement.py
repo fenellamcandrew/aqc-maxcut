@@ -7,7 +7,7 @@ import math
 # utilizes the theory from Schmidt Decomposition
 def entanglementCalc(n, state_curr):
 
-    # Reshapes our current state to a matrix so we can computer singular
+    # Reshapes our current state to a matrix so we can compute singular
     # values
     if n%2 == 0: # if n is EVEN then matrix is dimension 2^(n/2) X 2^(n/2)
         m = int(2**(n/2))

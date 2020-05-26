@@ -1,6 +1,7 @@
 from pauli import *
 
 # Creates the initial Hamiltonian given graph G
+# given n=3, XII, IXI, IIX
 def init_hamil(G):
     Hb = []
     for i in range(0, G.number_of_nodes()):

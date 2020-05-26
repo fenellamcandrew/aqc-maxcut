@@ -45,32 +45,31 @@ def Step5(G, SET, WT, SOL, j, i):
 
 # (Step 6) Starting with the stuff from Step 1
 
-# Generate random instance of the problem
-n = rn.randint(10,12)
-m = rn.randint(n,2*n)
-G = nx.gnm_random_graph(n,m)
-
+def Sahni(G):
+    n = G.number_of_nodes()
 # Initial Values (Step 1)
-WT = [0,0]
+    WT = [0,0]
 #SET = np.concatenate((np.array(range(1,3)), np.zeros(n-2)))
-SET = [1,2] + ((n-2)*[0])
-SOL = G.number_of_edges()
-edgelist = list(G.edges())
-SOL = edgelist.count((0,1))
-j = 2
+    SET = [1,2] + ((n-2)*[0])
+    SOL = G.number_of_edges()
+    edgelist = list(G.edges())
+    SOL = edgelist.count((0,1))
+    j = 2
 
-while j < n:
-    WT = Step2(G, SET, WT, j)
-    dj = G.degree(j)
-    i = Step3(WT,dj)
-    SET[j] = i+1
-    WT, SOL = Step5(G, SET, WT, SOL, j, i)
-    j = j + 1
+    while j < n:
+        WT = Step2(G, SET, WT, j)
+        dj = G.degree(j)
+        i = Step3(WT,dj)
+        SET[j] = i+1
+        WT, SOL = Step5(G, SET, WT, SOL, j, i)
+        j = j + 1
 
-set1 = [i for i in range(0,len(SET)) if SET[i]==1]
-set2 = [i for i in range(0,len(SET)) if SET[i]==2]
+    set1 = [i for i in range(0,len(SET)) if SET[i]==1]
+    set2 = [i for i in range(0,len(SET)) if SET[i]==2]
 
-print("Sets are:", set1, set2)
-print("Value of the cut is:", SOL)
-nx.draw(G, with_labels=True)
-plt.show()
+    #print("Sets are:", set1, set2)
+    #print("Value of the cut is:", SOL)
+    final = [i-1 for i in SET]
+    listToStr = ''.join([str(elem) for elem in final])
+    #print(listToStr)
+    return listToStr

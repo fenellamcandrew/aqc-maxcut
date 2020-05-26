@@ -18,8 +18,10 @@ import random as rn
 def density(n,m):
     D = (2*m)/(n*(n-1))
     return D
+
+# Creating sparse graphs of n nodes
 '''
-n = 14
+n = 10
 count = 0
 sparse_graphs = []
 while count < 20:
@@ -30,23 +32,25 @@ while count < 20:
             sparse_graphs = sparse_graphs + [G]
             count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/Code/Instances/Sparse/n=14/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Sparse/n=10/"
 count = 1
 for G in sparse_graphs:
-    name = "14_Sparse" + str(count) + ".txt"
+    name = "10_Sparse" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
     f.close()
     count = count + 1
-'''
+
 #print(sparse_graphs)
 #for i in range(0,20):
 #    plt.figure(i)
 #    nx.draw(sparse_graphs[i],with_labels=True)
 #plt.show()
 '''
-n = 16
+# Creating Dense graphs for n nodes
+'''
+n = 10
 count = 0
 dense_graphs = []
 while count < 20:
@@ -57,23 +61,26 @@ while count < 20:
             dense_graphs = dense_graphs + [G]
             count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=16/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=10/"
 count = 1
 for G in dense_graphs:
-    name = "16_Dense" + str(count) + ".txt"
+    name = "10_Dense" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
     f.close()
     count = count + 1
 '''
-n = 4
-G = nx.gnm_random_graph(4,3)
-while not(nx.is_connected(G)):
-    G = nx.gnam_random_graph(4,3)
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Sparse/n=4/"
-name = "4_Sparse1.txt"
+# Creating single n=4 instance
+
+n = 6
+G = nx.gnm_random_graph(n,10)
+while not(nx.is_connected(G)):
+    G = nx.gnam_random_graph(n,10)
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=6/"
+name = "6_Dense1.txt"
 f = open(path + name,"w+")
 print(nx.node_link_data(G),file=f)
 f.flush()

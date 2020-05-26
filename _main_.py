@@ -12,6 +12,7 @@ from schrodinger import *
 from pauli import *
 from entanglement import *
 from energy_gap import *
+from Sahni import *
 
 # Function that truncates number to certain number of decimal points
 def truncate(n, decimals=0):
@@ -50,6 +51,7 @@ parser.add_argument('--run_path', type=str)
 args = parser.parse_args()
 # Extract into variable
 run_path = args.run_path
+run_path = 'params/ready/' + run_path
 
 print("Reading yaml file\n")
 with open(run_path) as file:
@@ -165,6 +167,13 @@ with mlflow.start_run():
     plt.title('Energy')
     plt.ylabel('Eigenvalues')
 
+# P(Success) - Makes more sense with USA, but just hang with me
+    classical_soln = Sahni(G) # Classical solution
+    for i in range(0,length(prob_state)):
+        if classical_soln==bin[i]:
+            soln_prob = prob_state[i]
+            break
+
 # Plotting picture of graph
     plt.subplot(2,2,(3,4))
     nx.draw(G,with_labels=True)
@@ -181,6 +190,7 @@ with mlflow.start_run():
 # log metrics for mlflow
     mlflow.log_metric("max entanglement",max(ent))
     mlflow.log_metric("min energy gap",min(min_gap))
+    mlflow.log_metrix("prob success",soln_prob)
 
 # lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
