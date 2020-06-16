@@ -11,7 +11,7 @@ do
   echo -e "Submitting job: \t $local_run_path"
 
   # Define run_file and log_file
-  prefix="params/ready"
+  prefix="params/ready/"
   export log_file=logs/${local_run_path#"$prefix"}.log
 
   echo -e "Logging results: \t $log_file"
