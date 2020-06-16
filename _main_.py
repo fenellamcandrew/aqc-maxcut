@@ -55,7 +55,7 @@ parser.add_argument('--run_path', type=str)
 args = parser.parse_args()
 # Extract into variable
 run_path = args.run_path
-run_path = 'params/ready/' + run_path
+#run_path = 'params/ready/' + run_path
 
 print("\nReading yaml file\n")
 with open(run_path) as file:
