@@ -7,6 +7,23 @@ dir=params/ready
 for f in $dir/*
 do
   local_run_path=$f
-  echo $local_run_path
+#  echo $local_run_path
+  echo -e "Submitting job: \t $local_run_path"
+
+# Identify number of qubits
+  N_QUBITS=$(echo $local_run_path | grep -oP '(?<=n_qubits)[0-9]+')
+
+# Dynamically allocate memory based on N_QUBITS
+  if (( $N_QUBITS >= 15 ))
+  then
+    # Allocate all RAM
+    export NodeMemory=80GB
+  elif (( N_QUBITS == 14 ))
+  then
+    export NodeMemory=40GB
+  else
+    export NodeMemory=10GB
+  fi
+  echo "Allocating node $NodeMemory memory for experiment $local_run_path"
 done
 #sbatch --mem 10GB --output=tests.log bin/run-experiments.slurm $run_file
