@@ -13,6 +13,8 @@ from pauli import *
 from entanglement import *
 from energy_gap import *
 from Sahni import *
+from energy_calc import *
+from brute_maxcut import *
 
 # Function that truncates number to certain number of decimal points
 def truncate(n, decimals=0):
@@ -40,6 +42,8 @@ if os.path.exists('tmp'):
         os.remove('tmp/fig1.png')
     if os.path.exists('tmp/fig2.png'):
         os.remove('tmp/fig2.png')
+    if os.path.exists('tmp/fig3.pmg'):
+        os.remove('tmp/fig3.png')
     os.rmdir('tmp')
 os.mkdir('tmp')
 
@@ -53,7 +57,7 @@ args = parser.parse_args()
 run_path = args.run_path
 run_path = 'params/ready/' + run_path
 
-print("Reading yaml file\n")
+print("\nReading yaml file\n")
 with open(run_path) as file:
     doc = yaml.load(file, Loader=yaml.FullLoader)
 
@@ -63,6 +67,7 @@ graph_type = params["graph_type"]
 t_step = params["t_step"]
 T = params["time_T"]
 instance_index = params["instance_index"]
+T = 100
 
 file_path = "instances/{graph_type}/n={n_qubits}/{n_qubits}_{graph_type}{instance_index}.txt".format(
     graph_type = graph_type,
@@ -86,6 +91,12 @@ mlflow.set_experiment(doc["experiment"]["name"])
 with mlflow.start_run():
 # Creating initial state, which is just equal superposition over all
 # possible states
+    print('Calculating classical solution\n')
+    classical_soln = bruteMAX(G) # Classical solution
+    if len(classical_soln) == 2:
+        bias = 1
+    else:
+        bias = 0
 
     state_curr = 1
     for i in range(0,n):
@@ -95,16 +106,20 @@ with mlflow.start_run():
     ent = []
     energy = []
     min_gap = []
+    ground_ent = []
     Hb = init_hamil(G)
-    Hp = prob_hamil(G)
+    Hp = prob_hamil(G,bias)
 
 #states = []
 #state1 = magnitudes(state_curr)
 #states = states + [state1]
     print("Starting evolution\n")
     while t <= T: # Terminate when t/T = 1
-        energy = energy + [energy_calc(t, T, Hb, Hp)]
-        min_gap = min_gap + [abs(energy_calc(t, T, Hb, Hp)[0]-energy_calc(t, T, Hb, Hp)[1])]
+        energies = energyCalcs(t,T,Hb,Hp)
+        energy = energy + [energies["e_gap"]]
+        ground_ent = ground_ent + [energies["g_ent"]]
+        min_gap = min_gap + [abs((energies["e_gap"])[0]-(energies["e_gap"])[1])]
+
         state_curr = schrodinger_solver(state_curr, t_step, t, T, Hb, Hp)
     #state_curr1 = magnitudes(state_curr)
     #states = states + [state_curr1]
@@ -116,7 +131,8 @@ with mlflow.start_run():
     print("Creating figures\n")
 # For the time being, have truncated the values to avoiding rounding errors
     for i in range(0,len(state_curr)):
-        state_curr[i] = truncate(state_curr[i], 10)
+        state_curr[i] = np.round(state_curr[i],10)
+        #state_curr[i] = truncate(state_curr[i], 10)
 
     fig, ax = plt.subplots()
 
@@ -167,20 +183,36 @@ with mlflow.start_run():
     plt.title('Energy')
     plt.ylabel('Eigenvalues')
 
-# P(Success) - Makes more sense with USA, but just hang with me
-    classical_soln = Sahni(G) # Classical solution
-    for i in range(0,length(prob_state)):
-        if classical_soln==bin[i]:
-            soln_prob = prob_state[i]
-            break
-
 # Plotting picture of graph
     plt.subplot(2,2,(3,4))
     nx.draw(G,with_labels=True)
 
+    # Plotting graph of ground state entropy
+    fig3 = plt.figure(3)
+    x_axis3 = []
+    num3 = 0
+    for k in range(0,len(ground_ent)):
+        x_axis3 = x_axis3 + [num3]
+        num3 = num3 + t_step
+    #plt.plot(np.arange(0, T, t_step).tolist(), energy, 'b')
+    #plt.plot(np.arange(0, T+t_step, t_step).tolist(), energy, 'b')
+    plt.plot(x_axis3, ground_ent)
+    plt.title('Ground State Entropy')
+    plt.ylabel('Entropy')
+
+# P(Success) - Makes more sense with USA, but just hang with me
+    #classical_soln = bruteMAX(G) # Classical solution
+    psucc = 0
+    for soln in classical_soln:
+        for i in range(0,len(prob_state)):
+            if soln==bin[i]:
+                psucc = psucc + prob_state[i]
+
     fig1.savefig("tmp/fig1.png")
     fig2.savefig("tmp/fig2.png")
+    fig3.savefig("tmp/fig3.png")
 
+    print('Logging MLFlow data\n')
 # log parameters for mlflow
     mlflow.log_param("n_qubits", n)
     mlflow.log_param("t_step", t_step)
@@ -190,15 +222,17 @@ with mlflow.start_run():
 # log metrics for mlflow
     mlflow.log_metric("max entanglement",max(ent))
     mlflow.log_metric("min energy gap",min(min_gap))
-    mlflow.log_metrix("prob success",soln_prob)
+    mlflow.log_metric("prob success",psucc)
 
 # lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
     mlflow.log_artifact("tmp/fig2.png")
+    mlflow.log_artifact("tmp/fig3.png")
     mlflow.log_artifact(run_path)
 
 
 # Deleting tmp file storing figs
 os.remove('tmp/fig1.png')
 os.remove('tmp/fig2.png')
+os.remove('tmp/fig3.png')
 os.rmdir('tmp')

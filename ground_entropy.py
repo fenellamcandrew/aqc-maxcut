@@ -5,7 +5,7 @@ import math
 # Calculates the entropy of the ground state, we call on our function
 # entanglementCalc to do so.
 def ground_entr(eigs):
-    # Eigenvales
+    # Eigenvalues
     eig_vals = eigs[0]
     # Matrix of eigenvectors where the rows are the eigenvectors
     eig_vecs = eigs[1]

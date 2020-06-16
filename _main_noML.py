@@ -77,6 +77,7 @@ f = open(file_path,"r")
 g = f.readline()    # this will be a string
 ge = eval(g)     # this will be the contents of the string; that is, the dictionary
 G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
+G = nx.gnm_random_graph(5,18)
 n = G.number_of_nodes()
 m = G.number_of_edges()
 
@@ -159,7 +160,8 @@ plt.title('Entanglement')
 
 # Plotting picture of graph
 plt.subplot(2,2,(3,4))
-pos = nx.planar_layout(G)
+if nx.check_planarity(G):
+    pos = nx.planar_layout(G)
 nx.draw(G,with_labels=True)
 #nx.draw(G,with_labels=True)
 
