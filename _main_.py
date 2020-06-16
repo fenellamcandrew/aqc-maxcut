@@ -85,6 +85,13 @@ G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 n = G.number_of_nodes()
 m = G.number_of_edges()
 
+# log parameters for mlflow
+mlflow.log_param("n_qubits", n)
+mlflow.log_param("t_step", t_step)
+mlflow.log_param("T", T)
+mlflow.log_param("Graph type", graph_type)
+mlflow.log_artifact(run_path)
+
 # MLFLOW
 mlflow.set_tracking_uri(doc["experiment"]["tracking-uri"])
 mlflow.set_experiment(doc["experiment"]["name"])
@@ -213,11 +220,6 @@ with mlflow.start_run():
     fig3.savefig("tmp/fig3.png")
 
     print('Logging MLFlow data\n')
-# log parameters for mlflow
-    mlflow.log_param("n_qubits", n)
-    mlflow.log_param("t_step", t_step)
-    mlflow.log_param("T", T)
-    mlflow.log_param("Graph type", graph_type)
 
 # log metrics for mlflow
     mlflow.log_metric("max entanglement",max(ent))
@@ -228,7 +230,6 @@ with mlflow.start_run():
     mlflow.log_artifact("tmp/fig1.png")
     mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact("tmp/fig3.png")
-    mlflow.log_artifact(run_path)
 
 
 # Deleting tmp file storing figs
