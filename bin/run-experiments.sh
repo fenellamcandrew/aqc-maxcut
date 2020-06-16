@@ -10,6 +10,12 @@ do
 #  echo $local_run_path
   echo -e "Submitting job: \t $local_run_path"
 
+  # Define run_file and log_file
+  prefix="params/ready"
+  export log_file=logs/${local_run_path#"$prefix"}.log
+
+  echo -e "Logging results: \t $log_file"
+
 # Identify number of qubits
   N_QUBITS=$(echo $local_run_path | grep -oP '(?<=n_qubits)[0-9]+')
 
