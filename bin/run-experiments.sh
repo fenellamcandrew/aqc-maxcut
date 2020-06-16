@@ -33,6 +33,6 @@ do
   echo "Allocating node $NodeMemory memory for experiment $local_run_path"
 
   # Run experiment as an instance of the singularity container
-  sbatch --mem $NodeMemory --output=$log_file bin/run/run-experiments.slurm $local_run_path
+  sbatch --mem $NodeMemory --output=$log_file bin/run-experiments.slurm $local_run_path
 done
 #sbatch --mem 10GB --output=tests.log bin/run-experiments.slurm $run_file
