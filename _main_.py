@@ -36,14 +36,26 @@ def magnitudes(array): # Should be correct
         newArray = newArray + [np.sqrt(abs((array[i].real)**2 + (array[i].imag)**2))]
     return newArray/np.sqrt(sum)
 
+# Calculate psucess (given classical solution add up the corresponding
+# probabilities in the quantum state PDF)
+def psuccess(classical_soln, prob_state):
+    psucc = 0
+    for soln in classical_soln:
+        for i in range(0,len(prob_state)):
+            if soln==bin[i]:
+                psucc = psucc + prob_state[i]
+    return psucc
+
 # Creating tmp file to store figs
 if os.path.exists('tmp'):
     if os.path.exists('tmp/fig1.png'):
         os.remove('tmp/fig1.png')
     if os.path.exists('tmp/fig2.png'):
         os.remove('tmp/fig2.png')
-    if os.path.exists('tmp/fig3.pmg'):
+    if os.path.exists('tmp/fig3.png'):
         os.remove('tmp/fig3.png')
+    if os.path.exists('tmp/fig4.png'):
+        os.remove('tmp/fig4.png')
     os.rmdir('tmp')
 os.mkdir('tmp')
 
@@ -67,7 +79,6 @@ graph_type = params["graph_type"]
 t_step = params["t_step"]
 T = params["time_T"]
 instance_index = params["instance_index"]
-T = 100
 
 file_path = "instances/{graph_type}/n={n_qubits}/{n_qubits}_{graph_type}{instance_index}.txt".format(
     graph_type = graph_type,
@@ -84,6 +95,8 @@ ge = eval(g)     # this will be the contents of the string; that is, the diction
 G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 n = G.number_of_nodes()
 m = G.number_of_edges()
+density = 2*m/(n*(n-1))
+is_planar = nx.check_planarity(G)
 
 # MLFLOW
 mlflow.set_tracking_uri(doc["experiment"]["tracking-uri"])
@@ -94,8 +107,10 @@ with mlflow.start_run():
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
     mlflow.log_param("Graph type", graph_type)
+    mlflow.log_param("Density", density)
+    mlflow.log_param("Planar", is_planar[0])
     mlflow.log_artifact(run_path)
-    
+
 # Creating initial state, which is just equal superposition over all
 # possible states
     print('Calculating classical solution\n')
@@ -104,6 +119,8 @@ with mlflow.start_run():
         bias = 1
     else:
         bias = 0
+
+    mlflow.log_param("Number of solutions", int(len(classical_soln)/2))
 
     state_curr = 1
     for i in range(0,n):
@@ -114,20 +131,41 @@ with mlflow.start_run():
     energy = []
     min_gap = []
     ground_ent = []
+    p_succ = []
+    biggest_psucc_diff = [0,0]
+
     Hb = init_hamil(G)
     Hp = prob_hamil(G,bias)
 
-#states = []
-#state1 = magnitudes(state_curr)
-#states = states + [state1]
+    x = np.arange(0,2**n,1)
+    length = len(str(format(x[-1],'b'))) # Length of final binary value
+    bin = []
+    for i in x:
+        bin = bin + [format(i,'b').zfill(length)] # Converting all values to binary values
+
+    # Current probability of success
+    psucc_curr = psuccess(classical_soln,squareElems(magnitudes(state_curr)))
+
     print("Starting evolution\n")
     while t <= T: # Terminate when t/T = 1
         energies = energyCalcs(t,T,Hb,Hp)
-        energy = energy + [energies["e_gap"]]
-        ground_ent = ground_ent + [energies["g_ent"]]
-        min_gap = min_gap + [abs((energies["e_gap"])[0]-(energies["e_gap"])[1])]
+        energy = energy + [energies["e_gap"]] # Energy gap list
+        ground_ent = ground_ent + [energies["g_ent"]] # Entropy of ground state
+        min_gap = min_gap + [abs((energies["e_gap"])[0]-(energies["e_gap"])[1])] # Minimum energy gap
 
-        state_curr = schrodinger_solver(state_curr, t_step, t, T, Hb, Hp)
+        new_state = schrodinger_solver(state_curr, t_step, t, T, Hb, Hp)
+
+        # Kepping track of time when the largest jump in psuccess happens
+        psucc_new = psuccess(classical_soln,squareElems(magnitudes(new_state)))
+        if biggest_psucc_diff[0] < abs(psucc_new-psucc_curr):
+            biggest_psucc_diff[0] = abs(psucc_new-psucc_curr)
+            biggest_psucc_diff[1] = t
+
+        psucc_curr = psucc_new
+
+        p_succ = p_succ + [psucc_curr] #
+
+        state_curr = new_state
     #state_curr1 = magnitudes(state_curr)
     #states = states + [state_curr1]
         ent = ent + [entanglementCalc(n,state_curr)]
@@ -163,6 +201,10 @@ with mlflow.start_run():
     plt.bar(x,prob_state.transpose().tolist())
     plt.xticks(maxes, slice, rotation=90)
     plt.title("PDF for final states")
+    if bias == 1:
+        solns_found = len(maxes)
+    else:
+        solns_found = len(maxes)/2
 
 # Plotting graph of entanglement
     fig2 = plt.figure(figsize = (10,7))
@@ -176,6 +218,7 @@ with mlflow.start_run():
     #plt.plot(np.arange(0, T+t_step, t_step).tolist(), ent)
     plt.plot(x_axis1, ent)
     plt.title('Entanglement')
+    plt.xlabel("T")
 
 # Plotting energy graph of eigenvalues
     plt.subplot(2,2,2)
@@ -189,6 +232,7 @@ with mlflow.start_run():
     plt.plot(x_axis2, energy, 'b')
     plt.title('Energy')
     plt.ylabel('Eigenvalues')
+    plt.xlabel("T")
 
 # Plotting picture of graph
     plt.subplot(2,2,(3,4))
@@ -206,8 +250,21 @@ with mlflow.start_run():
     plt.plot(x_axis3, ground_ent)
     plt.title('Ground State Entropy')
     plt.ylabel('Entropy')
+    plt.xlabel('T')
 
-# P(Success) - Makes more sense with USA, but just hang with me
+# PLOTTING PSUCCESS, BUT PROBABLY UNINTERESTING
+    fig4 = plt.figure(4)
+    x_axis4 = []
+    num4 = 0
+    for k in range(0,len(p_succ)):
+        x_axis4 = x_axis4 + [num4]
+        num4 = num4 + t_step
+    plt.plot(x_axis4, p_succ)
+    plt.title("Probability Success")
+    plt.ylabel("probability success")
+    plt.xlabel("T")
+
+# P(Success) - just hang with me
     #classical_soln = bruteMAX(G) # Classical solution
     psucc = 0
     for soln in classical_soln:
@@ -218,6 +275,7 @@ with mlflow.start_run():
     fig1.savefig("tmp/fig1.png")
     fig2.savefig("tmp/fig2.png")
     fig3.savefig("tmp/fig3.png")
+    fig4.savefig("tmp/fig4.png")
 
     print('Logging MLFlow data\n')
 
@@ -225,15 +283,20 @@ with mlflow.start_run():
     mlflow.log_metric("max entanglement",max(ent))
     mlflow.log_metric("min energy gap",min(min_gap))
     mlflow.log_metric("prob success",psucc)
+    mlflow.log_metric("biggest psucc change",biggest_psucc_diff[0])
+    mlflow.log_metric("biggest psucc change time", biggest_psucc_diff[1])
+    mlflow.log_metric("number of solutions found", solns_found)
 
 # lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
     mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact("tmp/fig3.png")
+    mlflow.log_artifact("tmp/fig4.png")
 
 
 # Deleting tmp file storing figs
 os.remove('tmp/fig1.png')
 os.remove('tmp/fig2.png')
 os.remove('tmp/fig3.png')
+os.remove('tmp/fig4.png')
 os.rmdir('tmp')
