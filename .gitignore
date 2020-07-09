@@ -132,3 +132,5 @@ dmypy.json
 mlruns/
 params/
 tmp/
+config/
+data/
