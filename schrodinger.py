@@ -10,7 +10,7 @@ def schrodinger_solver(state_curr, t_step, t, T, Hb, Hp):
     H1 = ham(Hb, Hp, t, T)
     H2 = ham(Hb, Hp, t+t_step, T)
     Hs = (H1+H2)/2
-    thingy = expm(-np.complex(0,1)*Hs*t_step)
+    thingy = expm(np.complex(0,-1)*Hs*t_step)
     state = np.dot(thingy,state_curr)
     return norm(state)
 
@@ -28,6 +28,6 @@ def norm(array): # Should be correct
     sum = 0
     #newArray = []
     for i in range(0,len(array)):
-        sum = sum + abs((array[i].real)**2 + (array[i].imag)**2)
+        sum = sum + ((array[i].real)**2 + (array[i].imag)**2)
         #newArray = newArray + [np.sqrt(abs((array[i].real)**2 + (array[i].imag)**2))]
     return (array/(np.sqrt(sum)))

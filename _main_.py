@@ -98,6 +98,7 @@ m = G.number_of_edges()
 density = 2*m/(n*(n-1))
 is_planar = nx.check_planarity(G)
 
+
 # MLFLOW
 mlflow.set_tracking_uri(doc["experiment"]["tracking-uri"])
 mlflow.set_experiment(doc["experiment"]["name"])
