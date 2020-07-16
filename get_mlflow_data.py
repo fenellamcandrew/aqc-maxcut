@@ -1,5 +1,9 @@
 '''
 Script to collect data from MLFlow
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6b4a6db33d074e6fe6724cc08237f3e844b6425b
 Author: Vivek Katial
 '''
 
@@ -30,3 +34,7 @@ logging.info('Downloading data from Experiment')
 d_results = mlflow.search_runs(experiment_ids=experiment.experiment_id)
 d_results.to_csv("data/d_runs.csv", index=False)
 logging.info('Writing runs data to "data/d_runs.csv"')
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6b4a6db33d074e6fe6724cc08237f3e844b6425b
