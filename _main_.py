@@ -95,8 +95,13 @@ ge = eval(g)     # this will be the contents of the string; that is, the diction
 G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 n = G.number_of_nodes()
 m = G.number_of_edges()
-density = 2*m/(n*(n-1))
-is_planar = nx.check_planarity(G)
+density = 2*m/(n*(n-1)) # calculating density
+is_planar = nx.check_planarity(G) # checking is graph is planar
+
+# calculating chromatic number
+G1 = nx.algorithms.coloring.greedy_color(G)
+colours = [G1[i] for i in range(n)]
+chromatic_num = max(colours)-min(colours)+1
 
 
 # MLFLOW
@@ -110,6 +115,7 @@ with mlflow.start_run():
     mlflow.log_param("Graph type", graph_type)
     mlflow.log_param("Density", density)
     mlflow.log_param("Planar", is_planar[0])
+    mlflow.log_param("Chromatic number", chromatic_num)
     mlflow.log_artifact(run_path)
 
 # Creating initial state, which is just equal superposition over all
@@ -135,6 +141,7 @@ with mlflow.start_run():
     p_succ = []
     biggest_psucc_diff = [0,0]
 
+    print('Building Hamiltonians\n')
     Hb = init_hamil(G)
     Hp = prob_hamil(G,bias)
 

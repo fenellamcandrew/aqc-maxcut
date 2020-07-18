@@ -18,6 +18,7 @@ import yaml
 #nx.draw(G)
 #plt.show()
 
+########################################################################
 def normTest(array): # Should be correct
     sum = 0
     #newArray = []
@@ -51,6 +52,7 @@ G3 = nx.Graph()
 G3.add_nodes_from(nodes)
 G3.add_edges_from(edges)
 
+########################################################################
 #graphs = [G1, G2, G3]
 #path = "/Users/fenella/Documents/Uni/Research/Code/Instances/Simple Examples/"
 #count = 0
@@ -70,6 +72,8 @@ G3.add_edges_from(edges)
 #plt.figure(3)
 #nx.draw(G3,with_labels=True)
 #plt.show()
+
+########################################################################
 '''
 def squareElems(array):
     newArray = []
@@ -86,6 +90,7 @@ plt.show()
 #print(nx.algorithms.planarity.check_planarity(GPlanar))
 #print(nx.algorithms.planarity.check_planarity(GNonPlanar))
 
+########################################################################
 '''
 state = np.kron(plus(), plus())
 state = normTest(state)
@@ -98,6 +103,7 @@ state = normFinal(state)
 print(state)
 '''
 
+########################################################################
 # SAVE FOR _main_.py file
 #for i in range(0,len(states)):
 #    plt.figure(i+1)
@@ -121,6 +127,8 @@ print(state)
 #    plt.bar(x,prob_state.transpose().tolist())
 #    plt.xticks(maxes, slice, rotation=90)
 #    plt.title("PDF for final states")
+
+########################################################################
 '''
 with open(r'params_template.yaml') as file:
     doc = yaml.load(file, Loader=yaml.FullLoader)
@@ -143,6 +151,13 @@ fig1.savefig('tmp/fig1.png')
 fig2.savefig('tmp/fig2.png')
 '''
 
-G = nx.complete_graph(4)
-nx.draw_planar(G)
+########################################################################
+n = 6
+G = nx.gnm_random_graph(n,6)
+G1 = nx.algorithms.coloring.greedy_color(G)
+print(G1)
+colours = [G1[i] for i in range(n)]
+chromatic_num = max(colours)-min(colours)+1)
+print(chromatic_num)
+nx.draw(G)
 plt.show()

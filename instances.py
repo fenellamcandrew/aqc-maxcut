@@ -19,23 +19,24 @@ def density(n,m):
     D = (2*m)/(n*(n-1))
     return D
 
-# Creating sparse graphs of n nodes
-'''
-n = 10
+n = 12 # number of graph nodes
+
+# Creating low density graphs of n nodes
+#n = 7
 count = 0
 sparse_graphs = []
-while count < 20:
+while count < 50:
     m = rn.randint(n-1,(n*(n-1)/2))
-    if density(n,m) < 0.5:
+    if density(n,m) < 0.35:
         G = nx.gnm_random_graph(n,m) # <- Erdos-Renyi
         if nx.is_connected(G) and not(G in sparse_graphs):
             sparse_graphs = sparse_graphs + [G]
             count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Sparse/n=10/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/low_density/n="+str(n)+"/"
 count = 1
 for G in sparse_graphs:
-    name = "10_Sparse" + str(count) + ".txt"
+    name = str(n)+"_low_density" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
@@ -47,41 +48,47 @@ for G in sparse_graphs:
 #    plt.figure(i)
 #    nx.draw(sparse_graphs[i],with_labels=True)
 #plt.show()
-'''
-# Creating Dense graphs for n nodes
-'''
-n = 10
+
+# Creating medium density graphs for n nodes
+#n = 7
 count = 0
 dense_graphs = []
-while count < 20:
+while count < 50:
     m = rn.randint(n-1,(n*(n-1)/2))
-    if density(n,m) > 0.5:
+    if (density(n,m) > 0.4) and (density(n,m) < 0.65):
         G = nx.gnm_random_graph(n,m) # <- Erdos-Renyi
         if nx.is_connected(G) and not(G in dense_graphs):
             dense_graphs = dense_graphs + [G]
             count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=10/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/medium_density/n="+str(n)+"/"
 count = 1
 for G in dense_graphs:
-    name = "10_Dense" + str(count) + ".txt"
+    name = str(n)+"_medium_density" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
     f.close()
     count = count + 1
-'''
 
-# Creating single n=4 instance
+# Creating high density graphs for n nodes
+#n = 7
+count = 0
+dense_graphs = []
+while count < 50:
+    m = rn.randint(n-1,(n*(n-1)/2))
+    if density(n,m) > 0.7:
+        G = nx.gnm_random_graph(n,m) # <- Erdos-Renyi
+        if nx.is_connected(G) and not(G in dense_graphs):
+            dense_graphs = dense_graphs + [G]
+            count = count + 1
 
-n = 6
-G = nx.gnm_random_graph(n,10)
-while not(nx.is_connected(G)):
-    G = nx.gnam_random_graph(n,10)
-
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/Dense/n=6/"
-name = "6_Dense1.txt"
-f = open(path + name,"w+")
-print(nx.node_link_data(G),file=f)
-f.flush()
-f.close()
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/high_density/n="+str(n)+"/"
+count = 1
+for G in dense_graphs:
+    name = str(n)+"_high_density" + str(count) + ".txt"
+    f = open(path + name,"w+")
+    print(nx.node_link_data(G),file=f)
+    f.flush()
+    f.close()
+    count = count + 1
