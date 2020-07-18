@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1
 
 # set your minimum acceptable walltime=hours:minutes:seconds
-#SBATCH -t 8-23:59:59
+#SBATCH -t 5-23:59:59
 
 # Specify your email address to be notified of progress.
 ### SBATCH --mail-type=ALL
