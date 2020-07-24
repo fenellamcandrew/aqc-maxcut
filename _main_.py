@@ -130,7 +130,7 @@ with mlflow.start_run():
     mlflow.log_param("average shortest path", av_shortest_path)
     mlflow.log_param("diameter", d)
     mlflow.log_param("radius", radius)
-    mlflow.log_param("average clustering", av_clust)
+    mlflow.log_param("average clustering", av_cluster)
 
     mlflow.log_artifact(run_path)
 
