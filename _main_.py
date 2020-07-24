@@ -299,11 +299,6 @@ with mlflow.start_run():
             if soln==bin[i]:
                 psucc = psucc + prob_state[i]
 
-    fig1.savefig("tmp/fig1.png")
-    fig2.savefig("tmp/fig2.png")
-    fig3.savefig("tmp/fig3.png")
-    fig4.savefig("tmp/fig4.png")
-
     print('Logging MLFlow data\n')
 
 # log metrics for mlflow
@@ -314,6 +309,11 @@ with mlflow.start_run():
     mlflow.log_metric("biggest psucc change time", biggest_psucc_diff[1])
     mlflow.log_metric("number of solutions found", solns_found)
     mlflow.log_metric("max ground entanglement",max(ground_ent))
+
+    fig1.savefig("tmp/fig1.png")
+    fig2.savefig("tmp/fig2.png")
+    fig3.savefig("tmp/fig3.png")
+    fig4.savefig("tmp/fig4.png")
 
 # lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
