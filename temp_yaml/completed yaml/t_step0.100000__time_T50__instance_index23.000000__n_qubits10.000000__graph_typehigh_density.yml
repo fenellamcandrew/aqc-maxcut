@@ -1,0 +1,18 @@
+experiment:
+  name: "aqc-maxcut"
+  author: "Fenella"
+  tracking-uri: "http://45.113.234.185:5000/"
+  seed: 1032918
+
+initialise:
+  source: "initialise_SCRIPT_PATH"
+  params:
+    n_qubits: "10"
+    graph_type: "high_density"
+    instance_index: "23"
+    t_step: "0.1"
+    time_T: "50"
+
+
+results:
+  source: "_main_.py"

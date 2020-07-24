@@ -96,7 +96,13 @@ G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 n = G.number_of_nodes()
 m = G.number_of_edges()
 density = 2*m/(n*(n-1)) # calculating density
+degrees = [val for (node, val) in G.degree()] # node degrees
 is_planar = nx.check_planarity(G) # checking is graph is planar
+algConnect = nx.algebraic_connectivity(G) # reflects how connected a graph is
+d = nx.diameter(G)
+av_shortest_path = nx.average_shortest_path_length(G)
+radius = nx.radius(G) # minimum eccentricity
+av_cluster = nx.average_clustering(G)
 
 # calculating chromatic number
 G1 = nx.algorithms.coloring.greedy_color(G)
@@ -110,12 +116,22 @@ mlflow.set_experiment(doc["experiment"]["name"])
 with mlflow.start_run():
     # log parameters for mlflow
     mlflow.log_param("n_qubits", n)
+    mlflow.log_param("n_edges", m)
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
     mlflow.log_param("Graph type", graph_type)
     mlflow.log_param("Density", density)
     mlflow.log_param("Planar", is_planar[0])
     mlflow.log_param("Chromatic number", chromatic_num)
+    mlflow.log_param("min node degree", min(degrees))
+    mlflow.log_param("max node degree", max(degrees))
+    mlflow.log_param("average node degree", sum(degrees)/len(degrees))
+    mlflow.log_param("algebraic connectivity", algConnect)
+    mlflow.log_param("average shortest path", av_shortest_path)
+    mlflow.log_param("diameter", d)
+    mlflow.log_param("radius", radius)
+    mlflow.log_param("average clustering", av_clust)
+
     mlflow.log_artifact(run_path)
 
 # Creating initial state, which is just equal superposition over all
@@ -123,11 +139,14 @@ with mlflow.start_run():
     print('Calculating classical solution\n')
     classical_soln = bruteMAX(G) # Classical solution
     if len(classical_soln) == 2:
+        soln_type = 'unique solution'
         bias = 1
     else:
+        soln_type = 'multiple solutions'
         bias = 0
 
     mlflow.log_param("Number of solutions", int(len(classical_soln)/2))
+    mlflow.log_param("Solution type", soln_type)
 
     state_curr = 1
     for i in range(0,n):
@@ -294,6 +313,7 @@ with mlflow.start_run():
     mlflow.log_metric("biggest psucc change",biggest_psucc_diff[0])
     mlflow.log_metric("biggest psucc change time", biggest_psucc_diff[1])
     mlflow.log_metric("number of solutions found", solns_found)
+    mlflow.log_metric("max ground entanglement",max(ground_ent))
 
 # lof artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")

@@ -1,64 +1,28 @@
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import xlrd
+import seaborn as sns
 
-loc = "d_runs.xls"
+sns.set()
 
-# To open Workbook
-wb = xlrd.open_workbook(loc)
-sheet = wb.sheet_by_index(0)
+# Read dataset
+df = pd.read_csv('runs.csv', index_col=0)
+# Recommended way
+sns.relplot(x='min energy gap', y='prob success', col='n_qubits', col_wrap=2, hue='Graph type', data=df)
+sns.relplot(x='max entanglement', y='prob success', col='n_qubits', col_wrap=2, hue='Graph type', data=df)
+sns.relplot(x='min energy gap', y='max entanglement', col='n_qubits', col_wrap=2, hue='Graph type', data=df)
+sns.relplot(x='Density', y='prob success', col='n_qubits', col_wrap=2, data=df)
 
-header = sheet.row_values(0) # Name of columns
+sns.lmplot(x='n_qubits', y='prob success', data=df)
 
-# Put each column of data into a list
-status = sheet.col_values(header.index('status'),start_rowx=1)
-density = sheet.col_values(header.index('params.Density'),start_rowx=1)
-type = sheet.col_values(header.index('params.Graph type'),start_rowx=1)
-ent = sheet.col_values(header.index('metrics.max entanglement'),start_rowx=1)
-n = sheet.col_values(header.index('params.n_qubits'),start_rowx=1)
-psucc_t = sheet.col_values(header.index('metrics.biggest psucc change time'),start_rowx=1)
-n_soln = sheet.col_values(header.index('params.Number of solutions'),start_rowx=1)
-solns_found = sheet.col_values(header.index('metrics.number of solutions found'),start_rowx=1)
-t_step = sheet.col_values(header.index('params.t_step'),start_rowx=1)
-T = sheet.col_values(header.index('params.T'),start_rowx=1)
-planarity = sheet.col_values(header.index('params.Planar'),start_rowx=1)
+fig, axs = plt.subplots(ncols=2)
+sns.lineplot(x='n_qubits',y='max entanglement', hue='Graph type', estimator=np.mean, data=df, ax=axs[0])
+sns.lineplot(x='n_qubits',y='max entanglement', hue='Graph type', estimator=np.median, data=df, ax=axs[1])
+fig, axs = plt.subplots(ncols=2)
+sns.lineplot(x='n_qubits', y='prob success', hue='Graph type', estimator=np.mean, data=df, ax=axs[0])
+sns.lineplot(x='n_qubits', y='prob success', hue='Graph type', estimator=np.median, data=df, ax=axs[1])
 
-# Filter data so it's only completed runs
-count = 0
-while count < len(status):
-    if status[count] != "FINISHED":
-        del status[count]
-        del density[count]
-        del type[count]
-        del ent[count]
-        del n[count]
-        del psucc_t[count]
-        del n_soln[count]
-        del solns_found[count]
-        del t_step[count]
-        del T[count]
-        del planarity[count]
-    else:
-        count = count + 1
+df_2 = df[df['Number of solutions']==1] # Filtering data so only contains ones where n_solns=1
+sns.lmplot(x='min energy gap',y='prob success',hue='n_qubits',fit_reg=False,legend=True,legend_out=True,data=df_2)
 
-av_ent_d = [[0]]*len(range(7,13))
-av_ent_s = [[0]]*len(range(7,13))
-for i in range(7,13):
-    count_d = 0
-    count_s = 0
-    for j in range(len(ent)):
-        if (type[j] == "Dense") and (n[j]==i):
-            av_ent_d[i-7] = av_ent_d[i-7] + [ent[j]]
-        if (type[j] == "Sparse") and (n[j]==i):
-            av_ent_s[i-7] = av_ent_s[i-7] + [ent[j]]
-
-for i in range(7,13):
-    av_ent_d[i-7] = sum(av_ent_d[i-7])/len(av_ent_d[i-7])
-    av_ent_s[i-7] = sum(av_ent_s[i-7])/len(av_ent_s[i-7])
-
-plt.plot(range(7,13), av_ent_d, label="Dense")
-plt.plot(range(7,13), av_ent_s, label="Sparse")
-plt.xlabel("n_qubits")
-plt.ylabel("average entanglement")
-plt.legend()
 plt.show()

@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 import random as rn
+from brute_maxcut import *
 
 # n = 15,16,17,18,19,20 - 20 graphs for each
 # 4 cases: sparse, dense, sparse weighted, dense weighted (weight in [1,9])
@@ -18,7 +19,7 @@ import random as rn
 def density(n,m):
     D = (2*m)/(n*(n-1))
     return D
-
+'''
 n = 12 # number of graph nodes
 
 # Creating low density graphs of n nodes
@@ -87,6 +88,28 @@ path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/high_density/
 count = 1
 for G in dense_graphs:
     name = str(n)+"_high_density" + str(count) + ".txt"
+    f = open(path + name,"w+")
+    print(nx.node_link_data(G),file=f)
+    f.flush()
+    f.close()
+    count = count + 1
+'''
+n = 12
+count = 0
+graphs = []
+while count < 50:
+    m = rn.randint(n-1,(n*(n-1)/2))
+    G = nx.gnm_random_graph(n,m)
+    solns = bruteMAX(G)
+    if nx.is_connected(G) and (len(solns) > 2) and (G not in graphs):
+        print(len(solns)/2, density(n,m))
+        graphs = graphs + [G]
+        count = count + 1
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/multiple_soln/n="+str(n)+"/"
+count = 1
+for G in graphs:
+    name = str(n)+"_multiple_soln" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
