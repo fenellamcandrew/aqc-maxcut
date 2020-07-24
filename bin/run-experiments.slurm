@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=run-experiment
-#SBATCH -p cloud
+#SBATCH -p physical
 
 # For R need to run on single CPU
 #SBATCH --ntasks=1
