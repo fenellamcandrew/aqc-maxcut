@@ -7,6 +7,7 @@ import yaml
 import mlflow
 import argparse
 import os
+import pandas as pd
 # Written files
 from schrodinger import *
 from pauli import *
@@ -56,6 +57,8 @@ if os.path.exists('tmp'):
         os.remove('tmp/fig3.png')
     if os.path.exists('tmp/fig4.png'):
         os.remove('tmp/fig4.png')
+    if os.path.exists('tmp/features.csv'):
+        os.remove('tmp/features.csv')
     os.rmdir('tmp')
 os.mkdir('tmp')
 
@@ -103,6 +106,7 @@ d = nx.diameter(G)
 av_shortest_path = nx.average_shortest_path_length(G)
 radius = nx.radius(G) # minimum eccentricity
 av_cluster = nx.average_clustering(G)
+triangles = nx.triangles(G)
 
 # calculating chromatic number
 G1 = nx.algorithms.coloring.greedy_color(G)
@@ -120,6 +124,7 @@ with mlflow.start_run():
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
     mlflow.log_param("Graph type", graph_type)
+    mlflow.log_param("instance index", instance_index)
     mlflow.log_param("Density", density)
     mlflow.log_param("Planar", is_planar[0])
     mlflow.log_param("Chromatic number", chromatic_num)
@@ -130,23 +135,33 @@ with mlflow.start_run():
     mlflow.log_param("average shortest path", av_shortest_path)
     mlflow.log_param("diameter", d)
     mlflow.log_param("radius", radius)
+    mlflow.log_param("triangles", sum(triangles.values())/3)
     mlflow.log_param("average clustering", av_cluster)
+
+    features = pd.DataFrame([[nx.center(G), nx.eccentricity(G), nx.periphery(G), G.degree()]], \
+                columns=['center', 'eccentricity', 'periphery', 'node degrees'])
+    features.to_csv("tmp/features.csv")
+    mlflow.log_artifact("tmp/features.csv")
 
     mlflow.log_artifact(run_path)
 
 # Creating initial state, which is just equal superposition over all
 # possible states
     print('Calculating classical solution\n')
-    classical_soln = bruteMAX(G) # Classical solution
-    if len(classical_soln) == 2:
-        soln_type = 'unique solution'
+    classical_solver = bruteMAX(G) # Classical solution
+    cut_size = classical_solver['cut_size']
+    classical_soln = classical_solver['cuts']
+    if graph_type == "unique_soln_bias":
+        soln_type = "bias"
         bias = 1
     else:
-        soln_type = 'multiple solutions'
+        soln_type = "no bias"
         bias = 0
+    bias_node = 0 # Arbitrarily choosing node 0 to apply bias to, but actually not a good idea
 
     mlflow.log_param("Number of solutions", int(len(classical_soln)/2))
     mlflow.log_param("Solution type", soln_type)
+    mlflow.log_param("cut size", cut_size)
 
     state_curr = 1
     for i in range(0,n):
@@ -162,7 +177,7 @@ with mlflow.start_run():
 
     print('Building Hamiltonians\n')
     Hb = init_hamil(G)
-    Hp = prob_hamil(G,bias)
+    Hp = prob_hamil(G,bias,bias_node)
 
     x = np.arange(0,2**n,1)
     length = len(str(format(x[-1],'b'))) # Length of final binary value
@@ -327,4 +342,5 @@ os.remove('tmp/fig1.png')
 os.remove('tmp/fig2.png')
 os.remove('tmp/fig3.png')
 os.remove('tmp/fig4.png')
+os.remove('tmp/features.csv')
 os.rmdir('tmp')

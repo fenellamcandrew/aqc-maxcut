@@ -52,4 +52,8 @@ def bruteMAX(G):
                 bin1 = bin1 + '1'
                 bin2 = bin2 + '0'
         bin_cuts = bin_cuts + [bin1] + [bin2]
-    return bin_cuts
+    vals = {
+        "cut_size": max_size,
+        "cuts": bin_cuts
+    }
+    return vals

@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import math
 import yaml
+import pandas as pd
 
 # DO NOT DELETE!!! DON'T BE STUPID FENELLA!!!
 
@@ -19,6 +20,7 @@ import yaml
 #plt.show()
 
 ########################################################################
+'''
 def normTest(array): # Should be correct
     sum = 0
     #newArray = []
@@ -51,7 +53,7 @@ edges = [(0,1),(0,3),(0,5),(0,6),(1,4),(1,6),(1,7),(2,3),(2,5),(2,6),(2,7), \
 G3 = nx.Graph()
 G3.add_nodes_from(nodes)
 G3.add_edges_from(edges)
-
+'''
 ########################################################################
 #graphs = [G1, G2, G3]
 #path = "/Users/fenella/Documents/Uni/Research/Code/Instances/Simple Examples/"
@@ -82,14 +84,11 @@ def squareElems(array):
     return newArray
 
 GPlanar = nx.gnm_random_graph(3,3)
-GNonPlanar = nx.complete_graph(5)
+GNonPlanar = nx.complete_graph(7)
 
-nx.draw(GNonPlanar,with_labels=True)
-plt.show()
+print(nx.algorithms.planarity.check_planarity(GPlanar, counterexample=True))
+print(nx.algorithms.planarity.check_planarity(GNonPlanar, counterexample=True))
 '''
-#print(nx.algorithms.planarity.check_planarity(GPlanar))
-#print(nx.algorithms.planarity.check_planarity(GNonPlanar))
-
 ########################################################################
 '''
 state = np.kron(plus(), plus())
@@ -152,12 +151,52 @@ fig2.savefig('tmp/fig2.png')
 '''
 
 ########################################################################
-n = 6
-G = nx.gnm_random_graph(n,6)
-G1 = nx.algorithms.coloring.greedy_color(G)
-print(G1)
-colours = [G1[i] for i in range(n)]
-chromatic_num = max(colours)-min(colours)+1)
-print(chromatic_num)
-nx.draw(G)
+'''
+dir = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln"
+f = open(r"/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln" + "/n=8/8_unique_soln16.txt","r")
+g = f.readline()    # this will be a string
+ge = eval(g)     # this will be the contents of the string; that is, the dictionary
+G1 = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
+n1 = G1.number_of_nodes()
+m1 = G1.number_of_edges()
+
+plt.figure()
+pos1 = nx.circular_layout(G1)
+nx.draw(G1,pos1,with_labels=True)
+
+print("radius: %d" % nx.radius(G1))
+print("diameter: %d" % nx.diameter(G1))
+print("eccentricity: %s" % nx.eccentricity(G1))
+print("center: %s" % nx.center(G1))
+print("periphery: %s" % nx.periphery(G1))
+print("density: %s" % nx.density(G1))
+
+dir = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln"
+f = open(r"/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln" + "/n=8/8_unique_soln48.txt","r")
+g = f.readline()    # this will be a string
+ge = eval(g)     # this will be the contents of the string; that is, the dictionary
+G2 = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
+n2 = G2.number_of_nodes()
+m2 = G2.number_of_edges()
+
+plt.figure()
+pos2 = nx.circular_layout(G2)
+nx.draw(G2,pos2,with_labels=True)
+
+print("radius: %d" % nx.radius(G2))
+print("diameter: %d" % nx.diameter(G2))
+print("eccentricity: %s" % nx.eccentricity(G2))
+print("center: %s" % nx.center(G2))
+print("periphery: %s" % nx.periphery(G2))
+print("density: %s" % nx.density(G2))
+
+city = pd.DataFrame([[str(nx.center(G1)), str(nx.eccentricity(G1))], [str(nx.center(G2)), str(nx.eccentricity(G2))]], columns=['center', 'eccentricity'])
+city.to_csv('temp_yaml/test.csv')
+df = pd.read_csv('temp_yaml/test.csv', index_col=0)
+print(df)
+'''
+
+G = nx.gnm_random_graph(5,5)
+print(G.degree())
+nx.draw(G,with_labels=True)
 plt.show()

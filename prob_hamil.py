@@ -25,7 +25,7 @@ def bias(i,n):
     return curr
 
 # Creates Problem Hamiltonian give graph G
-def prob_hamil(G,bias_num):
+def prob_hamil(G,bias_num,bias_node):
     Hp = []
     nV = G.number_of_nodes()
     I = np.identity(2**nV)
@@ -33,5 +33,5 @@ def prob_hamil(G,bias_num):
         curr = zz(edge[0],edge[1],nV)
         curr = (1/2)*(I - curr)
         Hp = Hp + [curr]
-    Hp = sum(Hp) + bias_num*bias(0,nV)
+    Hp = sum(Hp) + bias_num*bias(bias_node,nV)
     return Hp

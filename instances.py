@@ -100,16 +100,27 @@ graphs = []
 while count < 50:
     m = rn.randint(n-1,(n*(n-1)/2))
     G = nx.gnm_random_graph(n,m)
-    solns = bruteMAX(G)
-    if nx.is_connected(G) and (len(solns) > 2) and (G not in graphs):
+    solver = bruteMAX(G)
+    solns = solver['cuts']
+    if nx.is_connected(G) and (len(solns) == 2) and (G not in graphs):
         print(len(solns)/2, density(n,m))
         graphs = graphs + [G]
         count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/multiple_soln/n="+str(n)+"/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln/n="+str(n)+"/"
 count = 1
 for G in graphs:
-    name = str(n)+"_multiple_soln" + str(count) + ".txt"
+    name = str(n)+"_unique_soln" + str(count) + ".txt"
+    f = open(path + name,"w+")
+    print(nx.node_link_data(G),file=f)
+    f.flush()
+    f.close()
+    count = count + 1
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln_bias/n="+str(n)+"/"
+count = 1
+for G in graphs:
+    name = str(n)+"_unique_soln_bias" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()
