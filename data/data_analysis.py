@@ -8,13 +8,13 @@ sns.set()
 # Read dataset
 df = pd.read_csv("d_runs.csv", index_col=0)
 print(len(df['metrics.max entanglement'])-df['metrics.max entanglement'].isnull().sum())
-print(df['metrics.max entanglement'].isnull())
 
+'''
 ################################################################################
 # Filtering data
 df = df[(df['status']=='FAILED') | (df['status']=='FINISHED')]
 print('Number of experiments completed: ' + str(len(df['status'])))
-'''
+
 df_one = df[df['params.Graph type']=='unique_soln']
 df_many = df[df['params.Graph type']=='multiple_soln']
 
