@@ -13,7 +13,7 @@
 ### SBATCH --mail-type=ALL
 
 # Load in Singularity Model (old) module load Singularity/3.2.0-spartan_gcc-6.2.0
-module load Singularity/3.5.3
+module load singularity/3.5.3
 
 file_input=$1
 
