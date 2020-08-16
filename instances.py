@@ -94,10 +94,10 @@ for G in dense_graphs:
     f.close()
     count = count + 1
 '''
-n = 12
+n = 10
 count = 0
 graphs = []
-while count < 50:
+while count < 100:
     m = rn.randint(n-1,(n*(n-1)/2))
     G = nx.gnm_random_graph(n,m)
     solver = bruteMAX(G)
@@ -116,7 +116,7 @@ for G in graphs:
     f.flush()
     f.close()
     count = count + 1
-
+'''
 path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln_bias/n="+str(n)+"/"
 count = 1
 for G in graphs:
@@ -126,3 +126,4 @@ for G in graphs:
     f.flush()
     f.close()
     count = count + 1
+'''

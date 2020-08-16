@@ -108,6 +108,10 @@ radius = nx.radius(G) # minimum eccentricity
 av_cluster = nx.average_clustering(G)
 triangles = nx.triangles(G)
 
+max_lap = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[0]
+max_2_lapl = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[1]
+lapl_ev = lapl_ev + [np.log(max_lap/max_2_lapl)] # log laplacian eigenvalue ratio
+
 # calculating chromatic number
 G1 = nx.algorithms.coloring.greedy_color(G)
 colours = [G1[i] for i in range(n)]
@@ -123,11 +127,11 @@ with mlflow.start_run():
     mlflow.log_param("n_edges", m)
     mlflow.log_param("t_step", t_step)
     mlflow.log_param("T", T)
-    mlflow.log_param("Graph type", graph_type)
+    mlflow.log_param("graph type", graph_type)
     mlflow.log_param("instance index", instance_index)
-    mlflow.log_param("Density", density)
-    mlflow.log_param("Planar", is_planar[0])
-    mlflow.log_param("Chromatic number", chromatic_num)
+    mlflow.log_param("density", density)
+    mlflow.log_param("planar", is_planar[0])
+    mlflow.log_param("chromatic number", chromatic_num)
     mlflow.log_param("min node degree", min(degrees))
     mlflow.log_param("max node degree", max(degrees))
     mlflow.log_param("average node degree", sum(degrees)/len(degrees))
@@ -137,6 +141,7 @@ with mlflow.start_run():
     mlflow.log_param("radius", radius)
     mlflow.log_param("triangles", sum(triangles.values())/3)
     mlflow.log_param("average clustering", av_cluster)
+    mlflow.log_param("log laplacian eig ratio", lapl_ev)
 
     features = pd.DataFrame([[nx.center(G), nx.eccentricity(G), nx.periphery(G), G.degree()]], \
                 columns=['center', 'eccentricity', 'periphery', 'node degrees'])
@@ -159,8 +164,8 @@ with mlflow.start_run():
         bias = 0
     bias_node = 0 # Arbitrarily choosing node 0 to apply bias to, but actually not a good idea
 
-    mlflow.log_param("Number of solutions", int(len(classical_soln)/2))
-    mlflow.log_param("Solution type", soln_type)
+    mlflow.log_param("number of solutions", int(len(classical_soln)/2))
+    mlflow.log_param("solution type", soln_type)
     mlflow.log_param("cut size", cut_size)
 
     state_curr = 1
