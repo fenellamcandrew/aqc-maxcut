@@ -57,8 +57,6 @@ if os.path.exists('tmp'):
         os.remove('tmp/fig3.png')
     if os.path.exists('tmp/fig4.png'):
         os.remove('tmp/fig4.png')
-    if os.path.exists('tmp/features.csv'):
-        os.remove('tmp/features.csv')
     os.rmdir('tmp')
 os.mkdir('tmp')
 
@@ -110,7 +108,7 @@ triangles = nx.triangles(G)
 
 max_lap = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[0]
 max_2_lapl = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[1]
-lapl_ev = lapl_ev + [np.log(max_lap/max_2_lapl)] # log laplacian eigenvalue ratio
+lapl_ev = np.log(max_lap/max_2_lapl) # log laplacian eigenvalue ratio
 
 # calculating chromatic number
 G1 = nx.algorithms.coloring.greedy_color(G)
@@ -142,11 +140,6 @@ with mlflow.start_run():
     mlflow.log_param("triangles", sum(triangles.values())/3)
     mlflow.log_param("average clustering", av_cluster)
     mlflow.log_param("log laplacian eig ratio", lapl_ev)
-
-    features = pd.DataFrame([[nx.center(G), nx.eccentricity(G), nx.periphery(G), G.degree()]], \
-                columns=['center', 'eccentricity', 'periphery', 'node degrees'])
-    features.to_csv("tmp/features.csv")
-    mlflow.log_artifact("tmp/features.csv")
 
     mlflow.log_artifact(run_path)
 
@@ -347,5 +340,4 @@ os.remove('tmp/fig1.png')
 os.remove('tmp/fig2.png')
 os.remove('tmp/fig3.png')
 os.remove('tmp/fig4.png')
-os.remove('tmp/features.csv')
 os.rmdir('tmp')
