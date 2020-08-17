@@ -6,15 +6,16 @@ import seaborn as sns
 sns.set()
 
 # Read dataset
-df = pd.read_csv("d_runs_temp.csv", index_col=0)
+df = pd.read_csv("d_runs.csv", index_col=1)
 
+for i in range(1,101):
+    print('instance' + str(i) + '=' + str(len(df[df['params.instance index']==i])))
 ################################################################################
 # Filtering data
 df = df[df['metrics.max entanglement'].notnull()]
 print('Number of experiments completed: ' + str(len(df['status'])))
 
-df_one = df[df['params.Graph type']=='unique_soln']
-df_many = df[df['params.Graph type']=='multiple_soln']
+df_one = df[df['params.graph type']=='unique_soln']
 
 '''
 ################################################################################
@@ -88,7 +89,9 @@ sns.relplot(x='chrom_div_nedges', y='metrics.prob success', col='params.T', hue=
 df_one['chrom_div_nedges'] = df_one['params.Chromatic number']/df_one['params.n_qubits']
 sns.relplot(x='chrom_div_nedges', y='metrics.prob success', col='params.T', hue='params.n_qubits', data=df_one)
 '''
+'''
 df_one_10 = df_one[df_one['params.n_qubits']==10]
 sns.relplot(x='metrics.max entanglement',y='metrics.prob success',col='params.T',hue='params.Chromatic number',data=df_one_10)
 
 plt.show()
+'''

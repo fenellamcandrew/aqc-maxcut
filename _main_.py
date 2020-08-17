@@ -46,7 +46,7 @@ def psuccess(classical_soln, prob_state):
             if soln==bin[i]:
                 psucc = psucc + prob_state[i]
     return psucc
-
+'''
 # Creating tmp file to store figs
 if os.path.exists('tmp'):
     if os.path.exists('tmp/fig1.png'):
@@ -59,7 +59,7 @@ if os.path.exists('tmp'):
         os.remove('tmp/fig4.png')
     os.rmdir('tmp')
 os.mkdir('tmp')
-
+'''
 # PARSING ARGS IN TERMINAL
 parser = argparse.ArgumentParser()
 # Adding command line argument
@@ -235,7 +235,7 @@ with mlflow.start_run():
     slice = list(np.array(bin)[maxes]) # Returning index of maxvalues
 
     prob_state = squareElems(state_curr)
-
+'''
 # Plotting PDF for final states, graph relating to the problem
 #plt.bar(x,state_curr.transpose().tolist()[0])
     plt.bar(x,prob_state.transpose().tolist())
@@ -303,7 +303,7 @@ with mlflow.start_run():
     plt.title("Probability Success")
     plt.ylabel("probability success")
     plt.xlabel("T")
-
+'''
 # P(Success) - just hang with me
     #classical_soln = bruteMAX(G) # Classical solution
     psucc = 0
@@ -322,7 +322,7 @@ with mlflow.start_run():
     mlflow.log_metric("biggest psucc change time", biggest_psucc_diff[1])
     mlflow.log_metric("number of solutions found", solns_found)
     mlflow.log_metric("max ground entanglement",max(ground_ent))
-
+'''
     fig1.savefig("tmp/fig1.png")
     fig2.savefig("tmp/fig2.png")
     fig3.savefig("tmp/fig3.png")
@@ -341,3 +341,4 @@ os.remove('tmp/fig2.png')
 os.remove('tmp/fig3.png')
 os.remove('tmp/fig4.png')
 os.rmdir('tmp')
+'''
