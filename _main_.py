@@ -235,17 +235,18 @@ with mlflow.start_run():
     slice = list(np.array(bin)[maxes]) # Returning index of maxvalues
 
     prob_state = squareElems(state_curr)
-'''
+    '''
 # Plotting PDF for final states, graph relating to the problem
 #plt.bar(x,state_curr.transpose().tolist()[0])
     plt.bar(x,prob_state.transpose().tolist())
     plt.xticks(maxes, slice, rotation=90)
     plt.title("PDF for final states")
+    '''
     if bias == 1:
         solns_found = len(maxes)
     else:
         solns_found = len(maxes)/2
-
+    '''
 # Plotting graph of entanglement
     fig2 = plt.figure(figsize = (10,7))
     plt.subplot(2,2,1)
@@ -303,7 +304,7 @@ with mlflow.start_run():
     plt.title("Probability Success")
     plt.ylabel("probability success")
     plt.xlabel("T")
-'''
+    '''
 # P(Success) - just hang with me
     #classical_soln = bruteMAX(G) # Classical solution
     psucc = 0
@@ -322,7 +323,7 @@ with mlflow.start_run():
     mlflow.log_metric("biggest psucc change time", biggest_psucc_diff[1])
     mlflow.log_metric("number of solutions found", solns_found)
     mlflow.log_metric("max ground entanglement",max(ground_ent))
-'''
+    '''
     fig1.savefig("tmp/fig1.png")
     fig2.savefig("tmp/fig2.png")
     fig3.savefig("tmp/fig3.png")
@@ -333,8 +334,9 @@ with mlflow.start_run():
     mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact("tmp/fig3.png")
     mlflow.log_artifact("tmp/fig4.png")
+    '''
 
-
+'''
 # Deleting tmp file storing figs
 os.remove('tmp/fig1.png')
 os.remove('tmp/fig2.png')
