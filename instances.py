@@ -94,10 +94,10 @@ for G in dense_graphs:
     f.close()
     count = count + 1
 '''
-n = 10
+n = 9
 count = 0
 graphs = []
-while count < 100:
+while count < 200:
     m = rn.randint(n-1,(n*(n-1)/2))
     G = nx.gnm_random_graph(n,m)
     solver = bruteMAX(G)

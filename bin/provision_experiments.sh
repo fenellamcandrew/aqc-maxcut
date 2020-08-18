@@ -4,7 +4,7 @@ export HOST_NAME=mcandrewf@spartan.hpc.unimelb.edu.au
 export RELATIVE_RUN_PATH=/params/ready
 
 #echo "moving run file to spartan"
-#local_run_path="params/ready/t_step0.010000__time_T10__instance_index1.000000__n_qubits4.000000__graph_typeSparse.yml"
+#local_run_path="params/ready/t_step0.100000__time_T10__instance_index100.000000__n_qubits9.000000__graph_typeunique_soln.yml"
 #local_run_path="_main_.py"
 #scp $local_run_path $HOST_NAME:$CLUSTER_URI$RELATIVE_RUN_PATH
 #scp $local_run_path $HOST_NAME:$CLUSTER_URI
