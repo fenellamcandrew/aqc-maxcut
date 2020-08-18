@@ -7,13 +7,13 @@ sns.set()
 
 # Read dataset
 df = pd.read_csv("d_runs.csv", index_col=1)
-
-for i in range(1,101):
-    print('instance' + str(i) + '=' + str(len(df[df['params.instance index']==i])))
 ################################################################################
 # Filtering data
 df = df[df['metrics.max entanglement'].notnull()]
 print('Number of experiments completed: ' + str(len(df['status'])))
+
+for i in range(1,101):
+    print('instance' + str(i) + '=' + str(len(df[df['params.instance index']==i])))
 
 df_one = df[df['params.graph type']=='unique_soln']
 
