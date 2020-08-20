@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import math
 import yaml
 import pandas as pd
+from brute_maxcut import *
 
 # DO NOT DELETE!!! DON'T BE STUPID FENELLA!!!
 
@@ -196,7 +197,20 @@ df = pd.read_csv('temp_yaml/test.csv', index_col=0)
 print(df)
 '''
 
-G = nx.gnm_random_graph(5,5)
+nodes = 10*[3]
+Glist = []
+count = 0
+while count < 20:
+    G = nx.random_degree_sequence_graph(nodes)
+    solver = bruteMAX(G)
+    solns = solver['cuts']
+    if nx.is_connected(G) and (len(solns) == 2) and (G not in Glist):
+        continue
+    else:
+        Glist = Glist + [G]
+        plt.figure()
+        nx.draw(G,with_labels=True)
+        count = count + 1
 print(G.degree())
-nx.draw(G,with_labels=True)
+print(Glist)
 plt.show()
