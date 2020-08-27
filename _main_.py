@@ -16,6 +16,7 @@ from energy_gap import *
 from Sahni import *
 from energy_calc import *
 from brute_maxcut import *
+from brute_cheeger import *
 
 # Function that truncates number to certain number of decimal points
 def truncate(n, decimals=0):
@@ -115,6 +116,8 @@ lapl_diff = abs(max_lap-max_2_lapl)
 diff_min_max_lapl = abs(max_lap - min_lap)
 lapl_energy = sum(laplacian_spec**2)
 
+cheeger = brute_CHEEGER(G)
+
 # MLFLOW
 mlflow.set_tracking_uri(doc["experiment"]["tracking-uri"])
 mlflow.set_experiment(doc["experiment"]["name"])
@@ -141,6 +144,7 @@ with mlflow.start_run():
     mlflow.log_param("laplacian max eigs diff", lapl_diff)
     mlflow.log_param("laplacian minimax diff", diff_min_max_lapl)
     mlflow.log_param("laplacian energy", lapl_energy)
+    mlflow.log_param("cheeger constant", cheeger)
 
     mlflow.log_artifact(run_path)
 
@@ -219,10 +223,11 @@ with mlflow.start_run():
     for i in range(0,len(state_curr)):
         state_curr[i] = np.round(state_curr[i],10)
         #state_curr[i] = truncate(state_curr[i], 10)
-
+    '''
     fig, ax = plt.subplots()
 
     fig1 = plt.figure(1)
+    '''
 # Finding the max values in PDF, so we don't have to label every value
 # Will only label xaxis of the highest peaks (makes it neater)
     x = np.arange(0,2**n,1)
