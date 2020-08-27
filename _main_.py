@@ -106,15 +106,14 @@ radius = nx.radius(G) # minimum eccentricity
 av_cluster = nx.average_clustering(G)
 triangles = nx.triangles(G)
 
-max_lap = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[0]
-max_2_lapl = (sorted((nx.normalized_laplacian_spectrum(G)),reverse=True))[1]
+laplacian_spec = nx.normalized_laplacian_spectrum(G)
+min_lap = (sorted(laplacian_spec))[0]
+max_lap = (sorted(laplacian_spec,reverse=True))[0]
+max_2_lapl = (sorted(laplacian_spec,reverse=True))[1]
 lapl_ev = np.log(max_lap/max_2_lapl) # log laplacian eigenvalue ratio
-
-# calculating chromatic number
-G1 = nx.algorithms.coloring.greedy_color(G)
-colours = [G1[i] for i in range(n)]
-chromatic_num = max(colours)-min(colours)+1
-
+lapl_diff = abs(max_lap-max_2_lapl)
+diff_min_max_lapl = abs(max_lap - min_lap)
+lapl_energy = sum(laplacian_spec**2)
 
 # MLFLOW
 mlflow.set_tracking_uri(doc["experiment"]["tracking-uri"])
@@ -129,7 +128,6 @@ with mlflow.start_run():
     mlflow.log_param("instance index", instance_index)
     mlflow.log_param("density", density)
     mlflow.log_param("planar", is_planar[0])
-    mlflow.log_param("chromatic number", chromatic_num)
     mlflow.log_param("min node degree", min(degrees))
     mlflow.log_param("max node degree", max(degrees))
     mlflow.log_param("average node degree", sum(degrees)/len(degrees))
@@ -140,6 +138,9 @@ with mlflow.start_run():
     mlflow.log_param("triangles", sum(triangles.values())/3)
     mlflow.log_param("average clustering", av_cluster)
     mlflow.log_param("log laplacian eig ratio", lapl_ev)
+    mlflow.log_param("laplacian max eigs diff", lapl_diff)
+    mlflow.log_param("laplacian minimax diff", diff_min_max_lapl)
+    mlflow.log_param("laplacian energy", lapl_energy)
 
     mlflow.log_artifact(run_path)
 
