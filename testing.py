@@ -196,7 +196,7 @@ city.to_csv('temp_yaml/test.csv')
 df = pd.read_csv('temp_yaml/test.csv', index_col=0)
 print(df)
 '''
-
+'''
 nodes = 10*[3]
 Glist = []
 count = 0
@@ -213,4 +213,7 @@ while count < 20:
         count = count + 1
 print(G.degree())
 print(Glist)
+'''
+G = nx.random_powerlaw_tree(9)
+nx.draw(G,with_labels=True)
 plt.show()

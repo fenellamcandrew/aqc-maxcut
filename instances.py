@@ -97,11 +97,10 @@ for G in dense_graphs:
 n = 9
 count = 0
 graphs = []
-r = 0.3
 while count < 400:
     #m = rn.randint(n-1,(n*(n-1)/2))
     #G = nx.gnm_random_graph(n,m)
-    G = nx.random_geometric_graph(n,r)
+    G = nx.random_powerlaw_tree(n,tries=1000)
     solver = bruteMAX(G)
     solns = solver['cuts']
     if nx.is_connected(G) and (len(solns) == 2) and (G not in graphs):
@@ -109,10 +108,10 @@ while count < 400:
         graphs = graphs + [G]
         count = count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/geometric/n="+str(n)+"/"
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/power_tree/n="+str(n)+"/"
 count = 1
 for G in graphs:
-    name = str(n)+"_geometric" + str(count) + ".txt"
+    name = str(n)+"_power_tree" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()

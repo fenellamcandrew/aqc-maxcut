@@ -77,7 +77,6 @@ df['small_N_L_diff'] = N_L_diff
 sns.relplot(x='small_N_L_diff',y='metrics.prob success', col='params.T', data=df)
 '''
 
-
 min_l = 100
 min_i = 0
 
