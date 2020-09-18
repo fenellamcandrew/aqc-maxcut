@@ -113,11 +113,11 @@ for i in range(len(df)):
     cheeg = df.iloc[i]['params.cheeger constant']
     if lapl < min_l:
         min_l = lapl
-        min_i = i
+        min_i = instance
         min_c = cheeg
     if lapl > max_l:
         max_l = lapl
-        max_i = i
+        max_i = instance
         max_c = cheeg
 
 print('max: '+ str(max_i) + ' ' + str(max_l) + ' ' + str(max_c))

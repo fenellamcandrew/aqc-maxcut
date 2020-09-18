@@ -214,6 +214,6 @@ while count < 20:
 print(G.degree())
 print(Glist)
 '''
-G = nx.random_powerlaw_tree(9)
+G = nx.connected_watts_strogatz_graph(9,3,0.75)
 nx.draw(G,with_labels=True)
 plt.show()
