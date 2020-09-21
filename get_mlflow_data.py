@@ -1,9 +1,6 @@
 '''
 Script to collect data from MLFlow
-<<<<<<< HEAD
-=======
 
->>>>>>> 6b4a6db33d074e6fe6724cc08237f3e844b6425b
 Author: Vivek Katial
 '''
 
@@ -11,6 +8,9 @@ import mlflow
 import yaml
 import logging
 
+
+# DEFINE settings
+MAX_RESULTS_SETTING=2000
 
 # Initialise logging
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -31,12 +31,7 @@ mlflow.set_tracking_uri(mlflow_config['mlflow']['tracking_server_uri'])
 experiment = mlflow.get_experiment_by_name(mlflow_config['mlflow']['experiment_name'])
 
 logging.info('Downloading data from Experiment')
-d_results = mlflow.search_runs(experiment_ids=experiment.experiment_id)
+d_results = mlflow.search_runs(experiment_ids=experiment.experiment_id, max_results=MAX_RESULTS_SETTING)
 d_results.to_csv("data/d_runs.csv", index=False)
 logging.info('Writing runs data to "data/d_runs.csv"')
-'''
-<<<<<<< HEAD
-=======
 
->>>>>>> 6b4a6db33d074e6fe6724cc08237f3e844b6425b
-'''
