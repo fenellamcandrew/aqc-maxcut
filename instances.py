@@ -94,6 +94,7 @@ for G in dense_graphs:
     f.close()
     count = count + 1
 '''
+'''
 n = 9
 count = 0
 graphs = []
@@ -109,11 +110,53 @@ while count < 400:
         print(count, len(solns)/2, nx.density(G))
         graphs = graphs + [G]
         count = count + 1
+'''
+graphs = []
+n = 9
+big_count = 0
+for i in [1,2,3,4]:
+    count = 0
+    while count < 50:
+        add_num = rn.randint(1,3)
+        G = nx.complete_bipartite_graph(i,n-i)
+        for j in range(0,add_num):
+            S1 = rn.randint(0,n-2)
+            S2 = rn.randint(S1,n-1)
+            while G.has_edge(S1,S2):
+                S1 = rn.randint(0,n-2)
+                S2 = rn.randint(S1,n-1)
+            G.add_edge(S1,S2)
+        if nx.is_connected(G) and (G not in graphs):
+            lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+            print(big_count, np.log(lapl[0]/lapl[1]))
+            graphs = graphs + [G]
+            count = count + 1
+            big_count = big_count + 1
 
-path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/watts_strogatz/n="+str(n)+"/"
+n = 9
+for i in [2,3,4,5]:
+    count = 0
+    while count < 50:
+        rem_num = rn.randint(1,3)
+        G = nx.complete_bipartite_graph(i,n-i)
+        for j in range(0,rem_num):
+            S1 = rn.randint(0,i)
+            S2 = rn.randint(i+1,n-1)
+            while not G.has_edge(S1,S2):
+                S1 = rn.randint(0,i)
+                S2 = rn.randint(i+1,n-1)
+            G.remove_edge(S1,S2)
+        if nx.is_connected(G) and (G not in graphs):
+            lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+            print(big_count, np.log(lapl[0]/lapl[1]))
+            graphs = graphs + [G]
+            count = count + 1
+            big_count = big_count + 1
+
+path = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/nearly_complete_bipartite/n="+str(n)+"/"
 count = 1
 for G in graphs:
-    name = str(n)+"_watts_strogatz" + str(count) + ".txt"
+    name = str(n)+"_nearly_complete_bipartite" + str(count) + ".txt"
     f = open(path + name,"w+")
     print(nx.node_link_data(G),file=f)
     f.flush()

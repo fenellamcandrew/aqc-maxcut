@@ -5,99 +5,31 @@ import seaborn as sns
 import networkx as nx
 from brute_cheeger import *
 from scipy.optimize import curve_fit
-
-def test_func(x, a, b, c):
-    return a * np.exp(b * x) + c
+import statistics as st
+import scipy
 
 sns.set()
 
 # Read dataset
-df = pd.read_csv("d_runs.csv", index_col=False)
+df_else = pd.read_csv("d_runs.csv", index_col=0)
+df_ws = pd.read_csv("d_runs_ws.csv", index_col=0)
+df = pd.concat([df_else, df_ws],sort=True)
 ################################################################################
 # Filtering data
 df = df[df['metrics.max entanglement'].notnull()]
+df = df[(df['params.T']==20) | (df['params.T']==30) | (df['params.T']==40) | (df['params.T']==50) | (df['params.T']==60)]
 print('Number of experiments completed: ' + str(len(df['status'])))
 
-T_list = []
-lapl_list = []
-for i in range(1,401):
-    df_curr = df[df['params.instance index'] == i]
-    if (len(df_curr) != 12):
-        continue
-    smallest_T_needed = 100
-    for j in range(10,70,5):
-        df_T = df_curr[df_curr['params.T'] == j]
-        #print(df_T.iloc[0]['metrics.prob success'])
-        if df_T.iloc[0]['metrics.prob success'] > 0.8:
-            smallest_T_needed = j
-            break
-    if smallest_T_needed == 100:
-        continue
-    lapl_list = lapl_list + len(df_curr)*[df_T.iloc[0]['params.log laplacian eig ratio']]
-    T_list = T_list + len(df_curr)*[smallest_T_needed]
-plt.figure()
-plt.plot(lapl_list,T_list,'o')
-plt.xlabel('log laplacian eig ratio')
-plt.ylabel('minimum time needed')
-plt.title('Psuccess = 0.8, n = 9')
-
-lapl_list = np.array(lapl_list)
-T_list = np.array(T_list)
-
-idx = lapl_list.argsort()[::-1]
-lapl_list = lapl_list[idx]
-T_list = T_list[idx]
-
-params, pcov = curve_fit(test_func, lapl_list, T_list)
-print(params)
-
-plt.figure(figsize=(6, 4))
-plt.scatter(lapl_list, T_list, label='Data')
-plt.plot(lapl_list, test_func(lapl_list, *params),
-         label='Fitted function')
-plt.legend(loc='best')
-
-T_list = []
-lapl_list = []
-for i in range(1,401):
-    df_curr = df[df['params.instance index'] == i]
-    if (len(df_curr) != 12):
-        continue
-    smallest_T_needed = 100
-    for j in range(10,70,5):
-        df_T = df_curr[df_curr['params.T'] == j]
-        #print(df_T.iloc[0]['metrics.prob success'])
-        if df_T.iloc[0]['metrics.prob success'] > 0.9:
-            smallest_T_needed = j
-            break
-    if smallest_T_needed == 100:
-        continue
-    lapl_list = lapl_list + len(df_curr)*[df_T.iloc[0]['params.log laplacian eig ratio']]
-    T_list = T_list + len(df_curr)*[smallest_T_needed]
-plt.figure()
-plt.plot(lapl_list,T_list,'o')
-plt.xlabel('log laplacian eig ratio')
-plt.ylabel('minimum time needed')
-plt.title('Psuccess = 0.9, n = 9')
-
-lapl_list = np.array(lapl_list)
-T_list = np.array(T_list)
-
-idx = lapl_list.argsort()[::-1]
-lapl_list = lapl_list[idx]
-T_list = T_list[idx]
-
-params, pcov = curve_fit(test_func, lapl_list, T_list)
-print(params)
-
-plt.figure(figsize=(6, 4))
-plt.scatter(lapl_list, T_list, label='Data')
-plt.plot(lapl_list, test_func(lapl_list, *params),
-         label='Fitted function')
-plt.legend(loc='best')
-
-'''
-cheegs = []
+st_dev = []
+var = []
+geom_mean = []
+harm_mean = []
+ratio_max_min = []
+skewness = []
+kurt = []
+large_eig = []
+second_large_eig = []
+curr = []
 for i in range(len(df)):
     instance = df['params.instance index'][i]
     graph = df['params.graph type'][i]
@@ -109,18 +41,31 @@ for i in range(len(df)):
     ge = eval(g)     # this will be the contents of the string; that is, the dictionary
     G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 
-    cheegs = cheegs + [np.log(brute_CHEEGER(G))]
-
     n = nx.number_of_nodes(G)
     m = nx.number_of_edges(G)
+
+    lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
     degrees = [val for (node, val) in G.degree()]
+    st_dev = st_dev + [st.stdev(degrees)]
+    var = var + [st.variance(degrees)]
+    geom_mean = geom_mean + [st.geometric_mean(degrees)]
+    harm_mean = harm_mean + [st.harmonic_mean(degrees)]
+    ratio_max_min = ratio_max_min + [max(degrees)/min(degrees)]
+    skewness = skewness + [scipy.stats.skew(degrees)]
+    kurt = kurt + [scipy.stats.kurtosis(degrees)]
+    large_eig = large_eig + [np.log(lapl[0])]
+    second_large_eig = second_large_eig + [np.log(lapl[1])]
+    curr = curr + [np.log(lapl[3])]
 
-    if (min(degrees)==2) and (max(degrees)==2) and (nx.density(G)==1):
-        print(abs(max_lapl-max_2_lapl)/2 < np.log(brute_CHEEGER(G)))
-    else:
-        print(abs(max_lapl-max_2_lapl)/2 >= np.log(brute_CHEEGER(G)))
-
-df['cheeger_const'] = cheegs
-sns.relplot(x='cheeger_const',y='metrics.prob success',col='params.T',data=df)
-'''
+df['params.node_deg_stdev'] = st_dev
+df['params.node_deg_variance'] = var
+df['params.node_deg_geom_mean'] = geom_mean
+df['params.node_deg_harm_mean'] = harm_mean
+df['params.ratio_max_min_node_deg'] = ratio_max_min
+df['params.node_deg_skewness'] = skewness
+df['params.node_deg_kurtosis'] = kurt
+df['params.log_largest_eig_laplacian'] = large_eig
+df['params.log_second_largest_eig_laplacian'] = second_large_eig
+sns.relplot(x='params.log laplacian eig ratio',y='metrics.prob success',hue='params.graph type', col='params.T',data=df)
+df.to_csv('data_updated.csv',index=False)
 plt.show()

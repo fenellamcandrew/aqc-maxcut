@@ -7,6 +7,8 @@ import math
 import yaml
 import pandas as pd
 from brute_maxcut import *
+import statistics as st
+import random as rn
 
 # DO NOT DELETE!!! DON'T BE STUPID FENELLA!!!
 
@@ -152,6 +154,8 @@ fig2.savefig('tmp/fig2.png')
 '''
 
 ########################################################################
+#Opening a graph and calculating some measures
+
 '''
 dir = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln"
 f = open(r"/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln" + "/n=8/8_unique_soln16.txt","r")
@@ -171,7 +175,11 @@ print("eccentricity: %s" % nx.eccentricity(G1))
 print("center: %s" % nx.center(G1))
 print("periphery: %s" % nx.periphery(G1))
 print("density: %s" % nx.density(G1))
+'''
 
+#Opening a graph and calculating some measures
+
+'''
 dir = "/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln"
 f = open(r"/Users/fenella/Documents/Uni/Research/aqc-maxcut/instances/unique_soln" + "/n=8/8_unique_soln48.txt","r")
 g = f.readline()    # this will be a string
@@ -196,6 +204,9 @@ city.to_csv('temp_yaml/test.csv')
 df = pd.read_csv('temp_yaml/test.csv', index_col=0)
 print(df)
 '''
+
+#Creating 10 node graphs with all nodes being 3 degrees.
+
 '''
 nodes = 10*[3]
 Glist = []
@@ -214,6 +225,96 @@ while count < 20:
 print(G.degree())
 print(Glist)
 '''
-G = nx.connected_watts_strogatz_graph(9,3,0.75)
-nx.draw(G,with_labels=True)
+
+#Generating all complete 9 node bipartite graphs and printing their log ratio of the
+#two largest values of the normalized laplacian matrix
+
+'''
+G1 = nx.complete_bipartite_graph(1,8)
+G2 = nx.complete_bipartite_graph(2,7)
+G3 = nx.complete_bipartite_graph(3,6)
+G4 = nx.complete_bipartite_graph(4,5)
+for G in [G1,G2,G3,G4]:
+    Lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+    m = G.number_of_edges()
+    print(np.log(Lapl[0]/Lapl[1]))
+print(nx.normalized_laplacian_spectrum(G1))
+print(nx.normalized_laplacian_spectrum(G2))
+print(nx.normalized_laplacian_spectrum(G3))
+print(nx.normalized_laplacian_spectrum(G4))
+
+print(nx.laplacian_spectrum(G1))
+'''
+
+'''
+n = 9
+for i in range(0,20):
+    m = rn.randint(n-1,(n*(n-1)/2))
+    G = nx.gnm_random_graph(n,m)
+    #G = nx.gnp_random_graph(n,0.2)
+    degrees = [val for (node, val) in G.degree()]
+    var = st.variance(degrees)
+    while (not nx.is_connected(G)) or (var < 4.5):
+        m = rn.randint(n-1,(n*(n-1)/2))
+        G = nx.gnm_random_graph(n,m)
+    Lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+    print(var, st.mean(degrees))
+    plt.figure()
+    plt.title(str(np.log(Lapl[0]/Lapl[1])))
+    nx.draw(G,with_labels=True)
+#nx.draw(G,with_labels=True)
+'''
+'''
+G = nx.path_graph(9)
+lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+print(lapl)
+print(np.log(lapl[0]/lapl[1]))
+
+print(' ')
+
+file_path = "instances/watts_strogatz/n=9/9_watts_strogatz330.txt"
+# READ GRAPH FROM FILE
+f = open(file_path,"r")
+g = f.readline()    # this will be a string
+ge = eval(g)     # this will be the contents of the string; that is, the dictionary
+G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
+lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+print(lapl)
+print(np.log(lapl[0]/lapl[1]))
+nx.draw(G)
+'''
+n = 9
+for i in [1,2,3,4]:
+    count = 0
+    while count < 10:
+        add_num = rn.randint(1,3)
+        G = nx.complete_bipartite_graph(i,n-i)
+        for j in range(0,add_num):
+            S1 = rn.randint(0,n-2)
+            S2 = rn.randint(S1,n-1)
+            while G.has_edge(S1,S2):
+                S1 = rn.randint(0,n-2)
+                S2 = rn.randint(S1,n-1)
+            G.add_edge(S1,S2)
+        plt.figure()
+        nx.draw(G,with_labels=True)
+        count = count + 1
+
+n = 9
+for i in [1,2,3,4]:
+    count = 0
+    while count < 10:
+        rem_num = rn.randint(1,3)
+        G = nx.complete_bipartite_graph(i,n-i)
+        for j in range(0,rem_num):
+            S1 = rn.randint(0,i)
+            S2 = rn.randint(i+1,n-1)
+            while not G.has_edge(S1,S2):
+                S1 = rn.randint(0,i)
+                S2 = rn.randint(i+1,n-1)
+            G.remove_edge(S1,S2)
+        plt.figure()
+        nx.draw(G,with_labels=True)
+        count = count + 1
+
 plt.show()
