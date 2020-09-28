@@ -112,6 +112,7 @@ while count < 400:
         count = count + 1
 '''
 graphs = []
+lapl_vals = []
 n = 9
 big_count = 0
 for i in [1,2,3,4]:
@@ -126,10 +127,19 @@ for i in [1,2,3,4]:
                 S1 = rn.randint(0,n-2)
                 S2 = rn.randint(S1,n-1)
             G.add_edge(S1,S2)
-        if nx.is_connected(G) and (G not in graphs):
+        solver = bruteMAX(G)
+        solns = solver['cuts']
+        lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+        lapl_val = np.log(lapl[0]/lapl[1])
+        if nx.is_connected(G) and (len(solns) == 2) and (G not in graphs):
+            if lapl_val > 0.5:
+                thing = 1
+            else:
+                thing = 0
             lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
-            print(big_count, np.log(lapl[0]/lapl[1]))
+            print(big_count, thing, len(solns), lapl_val)
             graphs = graphs + [G]
+            lapl_vals = lapl_vals + [lapl_val]
             count = count + 1
             big_count = big_count + 1
 
@@ -146,10 +156,19 @@ for i in [2,3,4,5]:
                 S1 = rn.randint(0,i)
                 S2 = rn.randint(i+1,n-1)
             G.remove_edge(S1,S2)
-        if nx.is_connected(G) and (G not in graphs):
+        solver = bruteMAX(G)
+        solns = solver['cuts']
+        lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+        lapl_val = np.log(lapl[0]/lapl[1])
+        if nx.is_connected(G) and (len(solns) == 2) and (G not in graphs):
+            if lapl_val > 0.5:
+                thing = 1
+            else:
+                thing = 0
             lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
-            print(big_count, np.log(lapl[0]/lapl[1]))
+            print(big_count, thing, len(solns), lapl_val, thing)
             graphs = graphs + [G]
+            lapl_vals = lapl_vals + [lapl_val]
             count = count + 1
             big_count = big_count + 1
 

@@ -13,11 +13,13 @@ sns.set()
 # Read dataset
 df_else = pd.read_csv("d_runs.csv", index_col=0)
 df_ws = pd.read_csv("d_runs_ws.csv", index_col=0)
-df = pd.concat([df_else, df_ws],sort=True)
+df_ncb = pd.read_csv("d_runs_ncb.csv", index_col=0)
+df = pd.concat([df_else, df_ws, df_ncb],sort=True)
 ################################################################################
 # Filtering data
 df = df[df['metrics.max entanglement'].notnull()]
 df = df[(df['params.T']==20) | (df['params.T']==30) | (df['params.T']==40) | (df['params.T']==50) | (df['params.T']==60)]
+df = df[df['params.number of solutions']==1]
 print('Number of experiments completed: ' + str(len(df['status'])))
 
 st_dev = []

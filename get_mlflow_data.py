@@ -32,6 +32,5 @@ experiment = mlflow.get_experiment_by_name(mlflow_config['mlflow']['experiment_n
 
 logging.info('Downloading data from Experiment')
 d_results = mlflow.search_runs(experiment_ids=experiment.experiment_id, max_results=MAX_RESULTS_SETTING)
-d_results.to_csv("data/d_runs.csv", index=False)
-logging.info('Writing runs data to "data/d_runs.csv"')
-
+d_results.to_csv("data/d_runs_ncb.csv", index=False)
+logging.info('Writing runs data to "data/d_runs_ncb.csv"')
