@@ -23,9 +23,9 @@ df = df[df['params.number of solutions']==1]
 print('Number of experiments completed: ' + str(len(df['status'])))
 
 st_dev = []
-var = []
 geom_mean = []
 harm_mean = []
+ratio_min_min = []
 ratio_max_min = []
 skewness = []
 kurt = []
@@ -47,27 +47,30 @@ for i in range(len(df)):
     m = nx.number_of_edges(G)
 
     lapl = sorted(nx.normalized_laplacian_spectrum(G),reverse=True)
+    lapl_small_to_big = sorted(nx.normalized_laplacian_spectrum(G))
     degrees = [val for (node, val) in G.degree()]
+
     st_dev = st_dev + [st.stdev(degrees)]
-    var = var + [st.variance(degrees)]
     geom_mean = geom_mean + [st.geometric_mean(degrees)]
     harm_mean = harm_mean + [st.harmonic_mean(degrees)]
-    ratio_max_min = ratio_max_min + [max(degrees)/min(degrees)]
     skewness = skewness + [scipy.stats.skew(degrees)]
     kurt = kurt + [scipy.stats.kurtosis(degrees)]
+    ratio_max_min = ratio_max_min + [max(degrees)/min(degrees)]
+
+    ratio_min_min = ratio_min_min + [lapl_small_to_big[2]/lapl_small_to_big[1]]
     large_eig = large_eig + [np.log(lapl[0])]
     second_large_eig = second_large_eig + [np.log(lapl[1])]
     curr = curr + [np.log(lapl[3])]
 
 df['params.node_deg_stdev'] = st_dev
-df['params.node_deg_variance'] = var
 df['params.node_deg_geom_mean'] = geom_mean
 df['params.node_deg_harm_mean'] = harm_mean
 df['params.ratio_max_min_node_deg'] = ratio_max_min
 df['params.node_deg_skewness'] = skewness
 df['params.node_deg_kurtosis'] = kurt
+df['params.log_ratio_min_Laplacian_eig'] = ratio_min_min
 df['params.log_largest_eig_laplacian'] = large_eig
 df['params.log_second_largest_eig_laplacian'] = second_large_eig
-sns.relplot(x='params.log laplacian eig ratio',y='metrics.prob success',hue='params.graph type', col='params.T',data=df)
+sns.relplot(x='params.log_ratio_min_Laplacian_eig',y='metrics.prob success',hue='params.graph type', col='params.T',data=df)
 df.to_csv('data_updated.csv',index=False)
 plt.show()

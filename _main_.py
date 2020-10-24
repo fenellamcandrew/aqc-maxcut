@@ -97,6 +97,8 @@ ge = eval(g)     # this will be the contents of the string; that is, the diction
 G = nx.node_link_graph(ge)  # this will turn the dictionary back into a graph
 n = G.number_of_nodes()
 m = G.number_of_edges()
+
+# Graph features
 density = 2*m/(n*(n-1)) # calculating density
 degrees = [val for (node, val) in G.degree()] # node degrees
 is_planar = nx.check_planarity(G) # checking is graph is planar
@@ -335,7 +337,7 @@ with mlflow.start_run():
     fig3.savefig("tmp/fig3.png")
     fig4.savefig("tmp/fig4.png")
 
-# lof artifacts for mlflow (graphs and run_path)
+# log artifacts for mlflow (graphs and run_path)
     mlflow.log_artifact("tmp/fig1.png")
     mlflow.log_artifact("tmp/fig2.png")
     mlflow.log_artifact("tmp/fig3.png")

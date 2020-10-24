@@ -283,6 +283,7 @@ print(lapl)
 print(np.log(lapl[0]/lapl[1]))
 nx.draw(G)
 '''
+'''
 n = 9
 for i in [1,2,3,4]:
     count = 0
@@ -316,5 +317,7 @@ for i in [1,2,3,4]:
         plt.figure()
         nx.draw(G,with_labels=True)
         count = count + 1
-
+'''
+G = nx.random_regular_graph(4,9)
+print(sorted(nx.normalized_laplacian_spectrum(G)))
 plt.show()
